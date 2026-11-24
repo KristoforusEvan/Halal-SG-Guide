@@ -42,7 +42,7 @@ $dataUser = mysqli_fetch_assoc($resUser);
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <title>Profil Pengguna - Halal SG Guide</title>
-    <link rel="stylesheet" type="text/css" href="css/style.css" />
+    <link rel="stylesheet" type="text/css" href="css/style.css?v=3" />
 </head>
 <body>
     <div id="header">

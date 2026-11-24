@@ -72,7 +72,7 @@ $resultList = mysqli_stmt_get_result($qList);
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <title>Cari Masjid &amp; Jadwal Ibadah - Halal SG Guide</title>
-    <link rel="stylesheet" type="text/css" href="css/style.css" />
+    <link rel="stylesheet" type="text/css" href="css/style.css?v=3" />
     <script type="text/javascript" src="js/validasi.js"></script>
 </head>
 <body>

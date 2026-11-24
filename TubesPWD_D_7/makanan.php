@@ -153,4 +153,3 @@ $resultList = mysqli_stmt_get_result($qList);
 </html>
 
 <!-- coba aja //cedric  halo halo--> 
- <!-- coba aja // joe yoyo -->
