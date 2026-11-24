@@ -78,6 +78,7 @@ $resultList = mysqli_stmt_get_result($qList);
 <body>
     <div id="header">
         <h1>Halal SG Guide - Rencana Wisata Kuliner Halal</h1>
+        <p>Catat dan verifikasi restoran halal selama perjalanan Anda di Singapura</p>
     </div>
     <div id="nav">
         <a href="index.php">Homepage</a>
@@ -94,38 +95,32 @@ $resultList = mysqli_stmt_get_result($qList);
             echo '<p class="' . $tipe . '">' . htmlspecialchars($pesan) . '</p>';
         }
         ?>
-        <form action="makanan.php" method="post" onsubmit="return fn_ValMakanan();">
-            <input type="hidden" name="id_edit" value="<?php echo ($editData !== null) ? $editData['id'] : ''; ?>" />
-            <table>
-                <tr>
-                    <td style="width:30%;"><label for="nama_tempat"><strong>Nama Restoran / Kedai</strong></label></td>
-                    <td><input type="text" id="nama_tempat" name="nama_tempat" value="<?php echo ($editData !== null) ? htmlspecialchars($editData['nama_tempat']) : ''; ?>" /></td>
-                </tr>
-                <tr>
-                    <td><label for="lokasi_mrt"><strong>Lokasi / Stasiun MRT Terdekat</strong></label></td>
-                    <td><input type="text" id="lokasi_mrt" name="lokasi_mrt" value="<?php echo ($editData !== null) ? htmlspecialchars($editData['lokasi_mrt']) : ''; ?>" /></td>
-                </tr>
-                <tr>
-                    <td><label for="status_halal"><strong>Kategori Verifikasi Halal</strong></label></td>
-                    <td>
-                        <select id="status_halal" name="status_halal">
-                            <option value="Sertifikat Halal MUIS">Sertifikat Halal MUIS</option>
-                            <option value="Muslim-Owned (Pemilik Muslim)">Muslim-Owned (Pemilik Muslim)</option>
-                            <option value="No Pork No Lard">No Pork No Lard</option>
-                        </select>
-                    </td>
-                </tr>
-                <tr>
-                    <td><label for="catatan"><strong>Catatan Menu &amp; Sumber Verifikasi</strong></label></td>
-                    <td><textarea id="catatan" name="catatan" rows="3" cols="30"><?php echo ($editData !== null) ? htmlspecialchars($editData['catatan']) : ''; ?></textarea></td>
-                </tr>
-                <tr>
-                    <td colspan="2" style="text-align:center;">
-                        <input type="submit" class="btn" value="Simpan Rencana Kuliner" />
-                    </td>
-                </tr>
-            </table>
-        </form>
+        <div class="card-form">
+            <form action="makanan.php" method="post" onsubmit="return fn_ValMakanan();">
+                <input type="hidden" name="id_edit" value="<?php echo ($editData !== null) ? $editData['id'] : ''; ?>" />
+                <div class="form-group">
+                    <label for="nama_tempat">Nama Restoran / Kedai</label>
+                    <input type="text" id="nama_tempat" name="nama_tempat" value="<?php echo ($editData !== null) ? htmlspecialchars($editData['nama_tempat']) : ''; ?>" />
+                </div>
+                <div class="form-group">
+                    <label for="lokasi_mrt">Lokasi / Stasiun MRT Terdekat</label>
+                    <input type="text" id="lokasi_mrt" name="lokasi_mrt" value="<?php echo ($editData !== null) ? htmlspecialchars($editData['lokasi_mrt']) : ''; ?>" />
+                </div>
+                <div class="form-group">
+                    <label for="status_halal">Kategori Verifikasi Halal</label>
+                    <select id="status_halal" name="status_halal">
+                        <option value="Sertifikat Halal MUIS">Sertifikat Halal MUIS</option>
+                        <option value="Muslim-Owned (Pemilik Muslim)">Muslim-Owned (Pemilik Muslim)</option>
+                        <option value="No Pork No Lard">No Pork No Lard</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="catatan">Catatan Menu &amp; Sumber Verifikasi</label>
+                    <textarea id="catatan" name="catatan" rows="3" cols="30"><?php echo ($editData !== null) ? htmlspecialchars($editData['catatan']) : ''; ?></textarea>
+                </div>
+                <input type="submit" class="btn" value="Simpan Rencana Kuliner" />
+            </form>
+        </div>
 
         <h2>Daftar Rencana Wisata Kuliner Anda</h2>
         <table>
@@ -142,17 +137,17 @@ $resultList = mysqli_stmt_get_result($qList);
             while ($row = mysqli_fetch_assoc($resultList)) {
                 echo '<tr>';
                 echo '<td>' . $no . '</td>';
-                echo '<td>' . htmlspecialchars($row['nama_tempat']) . '</td>';
+                echo '<td><strong>' . htmlspecialchars($row['nama_tempat']) . '</strong></td>';
                 echo '<td>' . htmlspecialchars($row['lokasi_mrt']) . '</td>';
-                echo '<td>' . htmlspecialchars($row['status_halal']) . '</td>';
+                echo '<td><span class="badge-halal">' . htmlspecialchars($row['status_halal']) . '</span></td>';
                 echo '<td>' . htmlspecialchars($row['catatan']) . '</td>';
-                echo '<td><a href="makanan.php?edit=' . $row['id'] . '">Edit</a> | <a href="makanan.php?hapus=' . $row['id'] . '">Hapus</a></td>';
+                echo '<td><a class="aksi-link" href="makanan.php?edit=' . $row['id'] . '">Edit</a> | <a class="aksi-hapus" href="makanan.php?hapus=' . $row['id'] . '">Hapus</a></td>';
                 echo '</tr>';
                 $no++;
             }
             ?>
         </table>
-        <p>Jumlah rencana kuliner: <?php echo mysqli_num_rows($resultList); ?></p>
+        <p><strong>Jumlah rencana kuliner:</strong> <?php echo mysqli_num_rows($resultList); ?></p>
     </div>
 </body>
 </html>

@@ -78,6 +78,7 @@ $resultList = mysqli_stmt_get_result($qList);
 <body>
     <div id="header">
         <h1>Halal SG Guide - Jadwal Kunjungan Masjid &amp; Ibadah</h1>
+        <p>Atur jadwal sholat dan rute masjid terdekat di kawasan wisata Singapura</p>
     </div>
     <div id="nav">
         <a href="index.php">Homepage</a>
@@ -94,39 +95,33 @@ $resultList = mysqli_stmt_get_result($qList);
             echo '<p class="' . $tipe . '">' . htmlspecialchars($pesan) . '</p>';
         }
         ?>
-        <form action="masjid.php" method="post" onsubmit="return fn_ValMasjid();">
-            <input type="hidden" name="id_edit" value="<?php echo ($editData !== null) ? $editData['id'] : ''; ?>" />
-            <table>
-                <tr>
-                    <td style="width:30%;"><label for="nama_masjid"><strong>Nama Masjid / Musholla</strong></label></td>
-                    <td><input type="text" id="nama_masjid" name="nama_masjid" value="<?php echo ($editData !== null) ? htmlspecialchars($editData['nama_masjid']) : ''; ?>" /></td>
-                </tr>
-                <tr>
-                    <td><label for="area_singapura"><strong>Area / Stasiun MRT</strong></label></td>
-                    <td><input type="text" id="area_singapura" name="area_singapura" value="<?php echo ($editData !== null) ? htmlspecialchars($editData['area_singapura']) : ''; ?>" /></td>
-                </tr>
-                <tr>
-                    <td><label for="waktu_sholat"><strong>Rencana Waktu Sholat</strong></label></td>
-                    <td>
-                        <select id="waktu_sholat" name="waktu_sholat">
-                            <option value="Dzuhur &amp; Ashar (Jamak)">Dzuhur &amp; Ashar (Jamak)</option>
-                            <option value="Maghrib &amp; Isya (Jamak)">Maghrib &amp; Isya (Jamak)</option>
-                            <option value="Sholat Jumat">Sholat Jumat</option>
-                            <option value="Subuh">Subuh</option>
-                        </select>
-                    </td>
-                </tr>
-                <tr>
-                    <td><label for="keterangan"><strong>Keterangan Rute / Akses</strong></label></td>
-                    <td><textarea id="keterangan" name="keterangan" rows="3" cols="30"><?php echo ($editData !== null) ? htmlspecialchars($editData['keterangan']) : ''; ?></textarea></td>
-                </tr>
-                <tr>
-                    <td colspan="2" style="text-align:center;">
-                        <input type="submit" class="btn" value="Simpan Jadwal Ibadah" />
-                    </td>
-                </tr>
-            </table>
-        </form>
+        <div class="card-form">
+            <form action="masjid.php" method="post" onsubmit="return fn_ValMasjid();">
+                <input type="hidden" name="id_edit" value="<?php echo ($editData !== null) ? $editData['id'] : ''; ?>" />
+                <div class="form-group">
+                    <label for="nama_masjid">Nama Masjid / Musholla</label>
+                    <input type="text" id="nama_masjid" name="nama_masjid" value="<?php echo ($editData !== null) ? htmlspecialchars($editData['nama_masjid']) : ''; ?>" />
+                </div>
+                <div class="form-group">
+                    <label for="area_singapura">Area / Stasiun MRT</label>
+                    <input type="text" id="area_singapura" name="area_singapura" value="<?php echo ($editData !== null) ? htmlspecialchars($editData['area_singapura']) : ''; ?>" />
+                </div>
+                <div class="form-group">
+                    <label for="waktu_sholat">Rencana Waktu Sholat</label>
+                    <select id="waktu_sholat" name="waktu_sholat">
+                        <option value="Dzuhur &amp; Ashar (Jamak)">Dzuhur &amp; Ashar (Jamak)</option>
+                        <option value="Maghrib &amp; Isya (Jamak)">Maghrib &amp; Isya (Jamak)</option>
+                        <option value="Sholat Jumat">Sholat Jumat</option>
+                        <option value="Subuh">Subuh</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="keterangan">Keterangan Rute / Akses</label>
+                    <textarea id="keterangan" name="keterangan" rows="3" cols="30"><?php echo ($editData !== null) ? htmlspecialchars($editData['keterangan']) : ''; ?></textarea>
+                </div>
+                <input type="submit" class="btn" value="Simpan Jadwal Ibadah" />
+            </form>
+        </div>
 
         <h2>Daftar Rencana Kunjungan Masjid Anda</h2>
         <table>
@@ -143,17 +138,17 @@ $resultList = mysqli_stmt_get_result($qList);
             while ($row = mysqli_fetch_assoc($resultList)) {
                 echo '<tr>';
                 echo '<td>' . $no . '</td>';
-                echo '<td>' . htmlspecialchars($row['nama_masjid']) . '</td>';
+                echo '<td><strong>' . htmlspecialchars($row['nama_masjid']) . '</strong></td>';
                 echo '<td>' . htmlspecialchars($row['area_singapura']) . '</td>';
-                echo '<td>' . htmlspecialchars($row['waktu_sholat']) . '</td>';
+                echo '<td><span class="badge-halal">' . htmlspecialchars($row['waktu_sholat']) . '</span></td>';
                 echo '<td>' . htmlspecialchars($row['keterangan']) . '</td>';
-                echo '<td><a href="masjid.php?edit=' . $row['id'] . '">Edit</a> | <a href="masjid.php?hapus=' . $row['id'] . '">Hapus</a></td>';
+                echo '<td><a class="aksi-link" href="masjid.php?edit=' . $row['id'] . '">Edit</a> | <a class="aksi-hapus" href="masjid.php?hapus=' . $row['id'] . '">Hapus</a></td>';
                 echo '</tr>';
                 $no++;
             }
             ?>
         </table>
-        <p>Jumlah jadwal masjid: <?php echo mysqli_num_rows($resultList); ?></p>
+        <p><strong>Jumlah jadwal masjid:</strong> <?php echo mysqli_num_rows($resultList); ?></p>
     </div>
 </body>
 </html>

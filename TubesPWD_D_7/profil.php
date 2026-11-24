@@ -47,6 +47,7 @@ $dataUser = mysqli_fetch_assoc($resUser);
 <body>
     <div id="header">
         <h1>Halal SG Guide - Profil Wisatawan</h1>
+        <p>Kelola informasi pribadi akun wisata halal Anda</p>
     </div>
     <div id="nav">
         <a href="index.php">Homepage</a>
@@ -63,31 +64,27 @@ $dataUser = mysqli_fetch_assoc($resUser);
             echo '<p class="' . $tipe . '">' . htmlspecialchars($pesan) . '</p>';
         }
         ?>
-        <form action="profil.php" method="post">
-            <table>
-                <tr>
-                    <td style="width:30%;"><strong>Username</strong></td>
-                    <td><?php echo htmlspecialchars($dataUser['username']); ?> (Tidak dapat diubah)</td>
-                </tr>
-                <tr>
-                    <td><label for="nama"><strong>Nama Lengkap</strong></label></td>
-                    <td><input type="text" id="nama" name="nama" value="<?php echo htmlspecialchars($dataUser['nama']); ?>" /></td>
-                </tr>
-                <tr>
-                    <td><label for="email"><strong>Email</strong></label></td>
-                    <td><input type="text" id="email" name="email" value="<?php echo htmlspecialchars($dataUser['email']); ?>" /></td>
-                </tr>
-                <tr>
-                    <td><label for="asal_kota"><strong>Asal Kota</strong></label></td>
-                    <td><input type="text" id="asal_kota" name="asal_kota" value="<?php echo htmlspecialchars($dataUser['asal_kota']); ?>" /></td>
-                </tr>
-                <tr>
-                    <td colspan="2" style="text-align:center;">
-                        <input type="submit" class="btn" value="Simpan Perubahan Profil" />
-                    </td>
-                </tr>
-            </table>
-        </form>
+        <div class="card-form">
+            <form action="profil.php" method="post">
+                <div class="form-group">
+                    <label>Username (Tidak dapat diubah)</label>
+                    <input type="text" value="<?php echo htmlspecialchars($dataUser['username']); ?>" readonly="readonly" />
+                </div>
+                <div class="form-group">
+                    <label for="nama">Nama Lengkap</label>
+                    <input type="text" id="nama" name="nama" value="<?php echo htmlspecialchars($dataUser['nama']); ?>" />
+                </div>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="text" id="email" name="email" value="<?php echo htmlspecialchars($dataUser['email']); ?>" />
+                </div>
+                <div class="form-group">
+                    <label for="asal_kota">Asal Kota</label>
+                    <input type="text" id="asal_kota" name="asal_kota" value="<?php echo htmlspecialchars($dataUser['asal_kota']); ?>" />
+                </div>
+                <input type="submit" class="btn" value="Simpan Perubahan Profil" />
+            </form>
+        </div>
     </div>
 </body>
 </html>
