@@ -37,12 +37,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <script type="text/javascript" src="js/validasi.js"></script>
 </head>
 <body>
-    <div id="header">
-        <h1>Halal SG Guide - Panduan Wisata Muslim Singapura</h1>
-        <p>Informasi Kuliner Halal Terverifikasi MUIS &amp; Lokasi Masjid Terdekat</p>
-    </div>
-
     <?php if (isset($_SESSION['user_id'])) { ?>
+        <div id="header">
+            <h1>Halal SG Guide - Panduan Wisata Muslim Singapura</h1>
+            <p>Informasi Kuliner Halal Terverifikasi MUIS &amp; Lokasi Masjid Terdekat</p>
+        </div>
+
         <div id="nav">
             <a href="index.php">Homepage</a>
             <a href="makanan.php">Cari Makanan Halal (CRUD 1)</a>
@@ -64,21 +64,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <th>Menu Andalan</th>
                 </tr>
                 <tr>
-                    <td>Zam Zam Restaurant</td>
+                    <td><strong>Zam Zam Restaurant</strong></td>
                     <td>Bugis MRT (North Bridge Rd)</td>
-                    <td>Sertifikat Halal MUIS</td>
+                    <td><span class="badge-halal">Sertifikat Halal MUIS</span></td>
                     <td>Murtabak Rusa &amp; Nasi Briyani</td>
                 </tr>
                 <tr>
-                    <td>Hajah Maimunah</td>
+                    <td><strong>Hajah Maimunah</strong></td>
                     <td>Bugis / Jalan Pisang</td>
-                    <td>Sertifikat Halal MUIS</td>
+                    <td><span class="badge-halal">Sertifikat Halal MUIS</span></td>
                     <td>Nasi Padang &amp; Tahu Telur</td>
                 </tr>
                 <tr>
-                    <td>Encik Tan</td>
+                    <td><strong>Encik Tan</strong></td>
                     <td>Orchard / Bugis Junction</td>
-                    <td>Sertifikat Halal MUIS</td>
+                    <td><span class="badge-halal">Sertifikat Halal MUIS</span></td>
                     <td>Laksa &amp; Hainanese Chicken Rice</td>
                 </tr>
             </table>
@@ -92,19 +92,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <th>Fasilitas</th>
                 </tr>
                 <tr>
-                    <td>Masjid Sultan</td>
+                    <td><strong>Masjid Sultan</strong></td>
                     <td>Kampong Glam / Bugis</td>
                     <td>Bugis MRT (EW12 / DT14)</td>
                     <td>Ruang Sholat Luas, Tempat Wudhu Nyaman</td>
                 </tr>
                 <tr>
-                    <td>Masjid Al-Falah</td>
+                    <td><strong>Masjid Al-Falah</strong></td>
                     <td>Orchard Road</td>
                     <td>Somerset MRT (NS23)</td>
                     <td>Akses Strategis di Pusat Belanja Orchard</td>
                 </tr>
                 <tr>
-                    <td>Masjid Jamae (Chulia)</td>
+                    <td><strong>Masjid Jamae (Chulia)</strong></td>
                     <td>Chinatown</td>
                     <td>Chinatown MRT (NE4 / DT19)</td>
                     <td>Masjid Bersejarah di Tengah Chinatown</td>
@@ -112,31 +112,43 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </table>
         </div>
     <?php } else { ?>
-        <div class="container">
-            <h2>Login Wisatawan</h2>
-            <?php
-            if ($error !== '') {
-                echo '<p class="error">' . htmlspecialchars($error) . '</p>';
-            }
-            ?>
-            <form action="index.php" method="post" onsubmit="return fn_ValLogin();">
-                <table>
-                    <tr>
-                        <td style="width:30%;"><label for="username"><strong>Username</strong></label></td>
-                        <td><input type="text" id="username" name="username" /></td>
-                    </tr>
-                    <tr>
-                        <td><label for="password"><strong>Password</strong></label></td>
-                        <td><input type="password" id="password" name="password" /></td>
-                    </tr>
-                    <tr>
-                        <td colspan="2" style="text-align:center;">
-                            <input type="submit" class="btn" value="Masuk" />
-                        </td>
-                    </tr>
-                </table>
-            </form>
-            <p>Belum memiliki akun? <a href="register.php">Daftar pengguna baru di sini</a></p>
+        <div class="auth-wrapper">
+            <div class="auth-card">
+                <div class="auth-left">
+                    <div class="brand-tag">HALAL SG GUIDE</div>
+                    <p class="auth-sub">Nice to see you again</p>
+                    <h1 class="auth-title">WELCOME BACK</h1>
+                    <div class="auth-divider"></div>
+                    <p class="auth-desc">
+                        Temukan informasi kuliner bersertifikat halal MUIS dan lokasi masjid terdekat di Singapura dalam satu platform terverifikasi.
+                    </p>
+                </div>
+
+                <div class="auth-right">
+                    <h2 class="form-heading">Login Account</h2>
+                    <p class="form-subtext">Masuk menggunakan akun wisatawan Anda untuk mengelola rencana kuliner dan jadwal ibadah.</p>
+
+                    <?php
+                    if ($error !== '') {
+                        echo '<p class="error">' . htmlspecialchars($error) . '</p>';
+                    }
+                    ?>
+
+                    <form action="index.php" method="post" onsubmit="return fn_ValLogin();">
+                        <div class="input-box">
+                            <input type="text" id="username" name="username" placeholder="Username" />
+                        </div>
+                        <div class="input-box">
+                            <input type="password" id="password" name="password" placeholder="Password" />
+                        </div>
+                        <input type="submit" class="btn-pill" value="Login Sekarang" />
+                    </form>
+
+                    <div class="auth-footer">
+                        Belum memiliki akun? <a href="register.php">Daftar di sini</a>
+                    </div>
+                </div>
+            </div>
         </div>
     <?php } ?>
 </body>
