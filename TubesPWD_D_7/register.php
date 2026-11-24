@@ -54,47 +54,52 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <script type="text/javascript" src="js/validasi.js"></script>
 </head>
 <body>
-    <div id="header">
-        <h1>Halal SG Guide - Panduan Wisata Muslim Singapura</h1>
-    </div>
+    <div class="auth-wrapper">
+        <div class="auth-card">
+            <div class="auth-left">
+                <div class="brand-tag">HALAL SG GUIDE</div>
+                <p class="auth-sub">Start your halal journey</p>
+                <h1 class="auth-title">JOIN WITH US</h1>
+                <div class="auth-divider"></div>
+                <p class="auth-desc">
+                    Buat akun baru untuk mencatat rencana destinasi kuliner halal dan jadwal sholat selama berada di Singapura.
+                </p>
+            </div>
 
-    <div class="container">
-        <h2>Registrasi Wisatawan Baru</h2>
-        <?php
-        if ($pesan !== '') {
-            echo '<p class="' . $tipe . '">' . htmlspecialchars($pesan) . '</p>';
-        }
-        ?>
-        <form action="register.php" method="post" onsubmit="return fn_ValRegister();">
-            <table>
-                <tr>
-                    <td style="width:30%;"><label for="nama"><strong>Nama Lengkap</strong></label></td>
-                    <td><input type="text" id="nama" name="nama" /></td>
-                </tr>
-                <tr>
-                    <td><label for="username"><strong>Username</strong></label></td>
-                    <td><input type="text" id="username" name="username" /></td>
-                </tr>
-                <tr>
-                    <td><label for="email"><strong>Email</strong></label></td>
-                    <td><input type="text" id="email" name="email" /></td>
-                </tr>
-                <tr>
-                    <td><label for="password"><strong>Password</strong></label></td>
-                    <td><input type="password" id="password" name="password" /></td>
-                </tr>
-                <tr>
-                    <td><label for="asal_kota"><strong>Asal Kota (Indonesia)</strong></label></td>
-                    <td><input type="text" id="asal_kota" name="asal_kota" /></td>
-                </tr>
-                <tr>
-                    <td colspan="2" style="text-align:center;">
-                        <input type="submit" class="btn" value="Daftar Sekarang" />
-                    </td>
-                </tr>
-            </table>
-        </form>
-        <p>Sudah punya akun? <a href="index.php">Login di sini</a></p>
+            <div class="auth-right">
+                <h2 class="form-heading">Create Account</h2>
+                <p class="form-subtext">Lengkapi data di bawah ini untuk mendaftar sebagai wisatawan baru.</p>
+
+                <?php
+                if ($pesan !== '') {
+                    echo '<p class="' . $tipe . '">' . htmlspecialchars($pesan) . '</p>';
+                }
+                ?>
+
+                <form action="register.php" method="post" onsubmit="return fn_ValRegister();">
+                    <div class="input-box">
+                        <input type="text" id="nama" name="nama" placeholder="Nama Lengkap (Huruf &amp; Spasi)" />
+                    </div>
+                    <div class="input-box">
+                        <input type="text" id="username" name="username" placeholder="Username" />
+                    </div>
+                    <div class="input-box">
+                        <input type="text" id="email" name="email" placeholder="Email (contoh: nama@gmail.com)" />
+                    </div>
+                    <div class="input-box">
+                        <input type="password" id="password" name="password" placeholder="Password" />
+                    </div>
+                    <div class="input-box">
+                        <input type="text" id="asal_kota" name="asal_kota" placeholder="Asal Kota (Indonesia)" />
+                    </div>
+                    <input type="submit" class="btn-pill" value="Daftar Sekarang" />
+                </form>
+
+                <div class="auth-footer">
+                    Sudah punya akun? <a href="index.php">Login di sini</a>
+                </div>
+            </div>
+        </div>
     </div>
 </body>
 </html>
