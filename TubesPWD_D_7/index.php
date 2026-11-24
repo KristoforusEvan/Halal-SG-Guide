@@ -1,44 +1,29 @@
 <?php
 session_start();
-require_once 'koneksi.php';
+require 'koneksi.php';
 
 $error = '';
-$email = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $email    = strtolower(trim($_POST['email'] ?? ''));
+    $username = trim($_POST['username'] ?? '');
     $password = $_POST['password'] ?? '';
 
-    if ($email === '' || $password === '') {
-        $error = 'Harap isi email dan password terlebih dahulu.';
-    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        $error = 'Format alamat email tidak valid.';
+    if ($username === '' || $password === '') {
+        $error = '!! Harap isi username dan password. !!';
     } else {
-        $stmt = mysqli_prepare($conn, 'SELECT id, nama, email, password FROM users WHERE email = ? LIMIT 1');
-        mysqli_stmt_bind_param($stmt, 's', $email);
+        $password_enkripsi = md5($password);
+        $stmt = mysqli_prepare($conn, 'SELECT id, nama, username FROM users WHERE username = ? AND password = ?');
+        mysqli_stmt_bind_param($stmt, 'ss', $username, $password_enkripsi);
         mysqli_stmt_execute($stmt);
         $result = mysqli_stmt_get_result($stmt);
 
         if ($row = mysqli_fetch_assoc($result)) {
-            if (password_verify($password, $row['password'])) {
-                session_regenerate_id(true);
-                $_SESSION['user_id'] = $row['id'];
-                $_SESSION['nama']    = $row['nama'];
-                $_SESSION['email']   = $row['email'];
-
-                mysqli_stmt_close($stmt);
-                mysqli_close($conn);
-
-                header('Location: index.php');
-                exit();
-            } else {
-                $error = 'Email atau password yang Anda masukkan salah.';
-            }
+            $_SESSION['user_id'] = $row['id'];
+            $_SESSION['nama'] = $row['nama'];
+            $_SESSION['username'] = $row['username'];
         } else {
-            $error = 'Email atau password yang Anda masukkan salah.';
+            $error = '!! Username atau password salah. !!';
         }
-
-        mysqli_stmt_close($stmt);
     }
 }
 ?>
@@ -48,7 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <title>Halal SG Guide - Panduan Wisata Halal Singapura</title>
-    <link rel="stylesheet" type="text/css" href="css/style.css" />
+    <link rel="stylesheet" type="text/css" href="css/style.css?v=3" />
     <script type="text/javascript" src="js/validasi.js"></script>
 </head>
 <body>
@@ -130,31 +115,44 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <div class="auth-wrapper">
             <div class="auth-card">
                 <div class="auth-left">
-                    <div class="brand-tag">HALAL SG GUIDE</div>
-                    <p class="auth-sub">Nice to see you again</p>
-                    <h1 class="auth-title">WELCOME BACK</h1>
-                    <div class="auth-divider"></div>
-                    <p class="auth-desc">
-                        Temukan informasi kuliner bersertifikat halal MUIS dan lokasi masjid terdekat di Singapura dalam satu platform terverifikasi.
-                    </p>
+                    <div class="brand-tag">HALAL SG GUIDE &bull; SINGAPORE</div>
+                    <div class="auth-center-text">
+                        <p class="auth-arabic">Assalamu'alaikum</p>
+                        <h1 class="auth-title">WELCOME BACK</h1>
+                        <div class="auth-divider"></div>
+                        <p class="auth-desc">
+                            Jelajahi keindahan Singapura dengan tenang. Temukan kuliner bersertifikat halal MUIS dan lokasi masjid terdekat dalam satu panduan terpercaya.
+                        </p>
+                    </div>
+                    <div class="auth-highlights">
+                        <div class="highlight-item">
+                            <strong>100% MUIS</strong>
+                            Kuliner Terverifikasi
+                        </div>
+                        <div class="highlight-item">
+                            <strong>70+ Masjid</strong>
+                            Panduan Lokasi Sholat
+                        </div>
+                        <div class="highlight-item">
+                            <strong>MRT Guide</strong>
+                            Rute Ramah Muslim
+                        </div>
+                    </div>
                 </div>
 
                 <div class="auth-right">
                     <h2 class="form-heading">Login Account</h2>
                     <p class="form-subtext">Masuk menggunakan akun wisatawan Anda untuk mengelola rencana kuliner dan jadwal ibadah.</p>
 
-                    <div id="pesanError">
-                        <?php
-                        if ($error !== '') {
-                            echo '<p class="error">' . htmlspecialchars($error) . '</p>';
-                        }
-                        ?>
-                    </div>
+                    <?php
+                    if ($error !== '') {
+                        echo '<p class="error">' . htmlspecialchars($error) . '</p>';
+                    }
+                    ?>
 
                     <form action="index.php" method="post" onsubmit="return fn_ValLogin();">
                         <div class="input-box">
-                            <input type="text" id="email" name="email" placeholder="Email"
-                                   value="<?php echo htmlspecialchars($email); ?>" />
+                            <input type="text" id="username" name="username" placeholder="Username" />
                         </div>
                         <div class="input-box">
                             <input type="password" id="password" name="password" placeholder="Password" />
