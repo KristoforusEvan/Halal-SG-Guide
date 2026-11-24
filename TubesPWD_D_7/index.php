@@ -1,29 +1,44 @@
 <?php
 session_start();
-require 'koneksi.php';
+require_once 'koneksi.php';
 
 $error = '';
+$email = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $username = trim($_POST['username'] ?? '');
+    $email    = strtolower(trim($_POST['email'] ?? ''));
     $password = $_POST['password'] ?? '';
 
-    if ($username === '' || $password === '') {
-        $error = '!! Harap isi username dan password. !!';
+    if ($email === '' || $password === '') {
+        $error = 'Harap isi email dan password terlebih dahulu.';
+    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $error = 'Format alamat email tidak valid.';
     } else {
-        $password_enkripsi = md5($password);
-        $stmt = mysqli_prepare($conn, 'SELECT id, nama, username FROM users WHERE username = ? AND password = ?');
-        mysqli_stmt_bind_param($stmt, 'ss', $username, $password_enkripsi);
+        $stmt = mysqli_prepare($conn, 'SELECT id, nama, email, password FROM users WHERE email = ? LIMIT 1');
+        mysqli_stmt_bind_param($stmt, 's', $email);
         mysqli_stmt_execute($stmt);
         $result = mysqli_stmt_get_result($stmt);
 
         if ($row = mysqli_fetch_assoc($result)) {
-            $_SESSION['user_id'] = $row['id'];
-            $_SESSION['nama'] = $row['nama'];
-            $_SESSION['username'] = $row['username'];
+            if (password_verify($password, $row['password'])) {
+                session_regenerate_id(true);
+                $_SESSION['user_id'] = $row['id'];
+                $_SESSION['nama']    = $row['nama'];
+                $_SESSION['email']   = $row['email'];
+
+                mysqli_stmt_close($stmt);
+                mysqli_close($conn);
+
+                header('Location: index.php');
+                exit();
+            } else {
+                $error = 'Email atau password yang Anda masukkan salah.';
+            }
         } else {
-            $error = '!! Username atau password salah. !!';
+            $error = 'Email atau password yang Anda masukkan salah.';
         }
+
+        mysqli_stmt_close($stmt);
     }
 }
 ?>
@@ -128,15 +143,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <h2 class="form-heading">Login Account</h2>
                     <p class="form-subtext">Masuk menggunakan akun wisatawan Anda untuk mengelola rencana kuliner dan jadwal ibadah.</p>
 
-                    <?php
-                    if ($error !== '') {
-                        echo '<p class="error">' . htmlspecialchars($error) . '</p>';
-                    }
-                    ?>
+                    <div id="pesanError">
+                        <?php
+                        if ($error !== '') {
+                            echo '<p class="error">' . htmlspecialchars($error) . '</p>';
+                        }
+                        ?>
+                    </div>
 
                     <form action="index.php" method="post" onsubmit="return fn_ValLogin();">
                         <div class="input-box">
-                            <input type="text" id="username" name="username" placeholder="Username" />
+                            <input type="text" id="email" name="email" placeholder="Email"
+                                   value="<?php echo htmlspecialchars($email); ?>" />
                         </div>
                         <div class="input-box">
                             <input type="password" id="password" name="password" placeholder="Password" />
