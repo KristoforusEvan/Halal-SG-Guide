@@ -1,94 +1,344 @@
+* {
+    box-sizing: border-box;
+}
+
 body {
-    background-color: rgb(236, 234, 234);
+    background-color: #eef2f9;
     min-height: 100vh;
     margin: 0;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    color: rgb(0, 0, 0);
+    color: #2c3e50;
 }
 
+/* ================= HALAMAN LOGIN & REGISTER (SPLIT CARD) ================= */
+.auth-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 30px 15px;
+}
+
+.auth-card {
+    display: flex;
+    width: 860px;
+    max-width: 100%;
+    background-color: #ffffff;
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 15px 35px rgba(24, 119, 242, 0.15);
+}
+
+.auth-left {
+    width: 48%;
+    background: linear-gradient(135deg, #2b8eff 0%, #0d62e0 100%);
+    color: #ffffff;
+    padding: 45px 35px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+.brand-tag {
+    font-size: 12px;
+    letter-spacing: 2px;
+    font-weight: bold;
+    text-transform: uppercase;
+    margin-bottom: 40px;
+    opacity: 0.9;
+}
+
+.auth-sub {
+    font-size: 16px;
+    margin: 0 0 8px 0;
+    opacity: 0.95;
+}
+
+.auth-title {
+    font-size: 32px;
+    letter-spacing: 1.5px;
+    margin: 0;
+    font-weight: 700;
+}
+
+.auth-divider {
+    width: 36px;
+    height: 4px;
+    background-color: #ffffff;
+    border-radius: 2px;
+    margin: 18px auto;
+}
+
+.auth-desc {
+    font-size: 13px;
+    line-height: 1.6;
+    opacity: 0.88;
+    margin: 0;
+}
+
+.auth-right {
+    width: 52%;
+    padding: 45px 40px;
+    background-color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.form-heading {
+    color: #1877f2;
+    font-size: 24px;
+    text-align: center;
+    margin: 0 0 8px 0;
+}
+
+.form-subtext {
+    color: #8a94a6;
+    font-size: 12px;
+    text-align: center;
+    margin: 0 0 25px 0;
+    line-height: 1.5;
+}
+
+.input-box {
+    margin-bottom: 14px;
+}
+
+.input-box input {
+    width: 100%;
+    padding: 12px 14px;
+    background-color: #f3f6fb;
+    border: 1px solid #e4eaf3;
+    border-left: 4px solid #1877f2;
+    border-radius: 4px;
+    font-size: 13px;
+    color: #2c3e50;
+}
+
+.input-box input:focus {
+    outline: none;
+    background-color: #ffffff;
+    border-color: #1877f2;
+}
+
+.btn-pill {
+    width: 100%;
+    padding: 12px 20px;
+    margin-top: 10px;
+    border: none;
+    border-radius: 25px;
+    background: linear-gradient(90deg, #2b8eff 0%, #0d62e0 100%);
+    color: #ffffff;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    cursor: pointer;
+    box-shadow: 0 6px 15px rgba(24, 119, 242, 0.3);
+}
+
+.btn-pill:hover {
+    background: linear-gradient(90deg, #1a7ae8 0%, #094eb8 100%);
+}
+
+.auth-footer {
+    text-align: center;
+    font-size: 13px;
+    color: #6c7a89;
+    margin-top: 20px;
+}
+
+.auth-footer a {
+    color: #1877f2;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.auth-footer a:hover {
+    text-decoration: underline;
+}
+
+/* ================= HALAMAN UTAMA / DASHBOARD (SETELAH LOGIN) ================= */
 #header {
-    background-color: rgb(46, 184, 169);
-    color: white;
-    padding: 20px;
+    background: linear-gradient(135deg, #2b8eff 0%, #0d62e0 100%);
+    color: #ffffff;
+    padding: 28px 20px;
     text-align: center;
 }
 
 #header h1 {
+    margin: 0 0 6px 0;
+    font-size: 26px;
+    letter-spacing: 0.5px;
+}
+
+#header p {
     margin: 0;
+    font-size: 14px;
+    opacity: 0.9;
 }
 
 #nav {
-    background-color: #332f73c7;
-    padding: 10px 20px;
+    background-color: #ffffff;
+    padding: 14px 20px;
     text-align: center;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.06);
 }
 
 #nav a {
-    color: #ffffff;
+    color: #4a5568;
     text-decoration: none;
-    margin: 0 12px;
+    margin: 0 8px;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 13px;
     font-weight: 600;
+    display: inline-block;
 }
 
 #nav a:hover {
-    text-decoration: underline;
+    background-color: #eef5ff;
+    color: #1877f2;
 }
 
 .container {
-    background-color: rgba(255, 255, 255, 0.95);
-    box-shadow: 0 0.5px 1px 0 rgb(165, 165, 165);
+    background-color: #ffffff;
+    box-shadow: 0 10px 25px rgba(24, 119, 242, 0.08);
+    border-radius: 14px;
+    padding: 28px 32px;
+    margin: 28px auto;
+    width: 88%;
+    max-width: 1050px;
+}
+
+.container h2 {
+    color: #1877f2;
+    margin-top: 0;
+    border-bottom: 2px solid #eef2f9;
+    padding-bottom: 10px;
+}
+
+.container h3 {
+    color: #0d62e0;
+    margin-top: 26px;
+}
+
+.card-form {
+    background-color: #f8faff;
+    border: 1px solid #e3ecfa;
     border-radius: 10px;
-    padding: 20px 25px;
-    margin: 25px auto;
-    width: 85%;
+    padding: 20px;
+    margin-bottom: 28px;
+}
+
+.form-group {
+    margin-bottom: 14px;
+}
+
+.form-group label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: #34495e;
+    margin-bottom: 6px;
+}
+
+.form-group input[type="text"],
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    padding: 10px 12px;
+    background-color: #ffffff;
+    border: 1px solid #d6e1f2;
+    border-left: 4px solid #1877f2;
+    border-radius: 5px;
+    font-family: inherit;
+    font-size: 13px;
+}
+
+.btn {
+    padding: 10px 24px;
+    border: none;
+    border-radius: 22px;
+    cursor: pointer;
+    background: linear-gradient(90deg, #2b8eff 0%, #0d62e0 100%);
+    color: #ffffff;
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-block;
+    box-shadow: 0 4px 12px rgba(24, 119, 242, 0.25);
+}
+
+.btn:hover {
+    background: linear-gradient(90deg, #1a7ae8 0%, #094eb8 100%);
 }
 
 table {
     border-collapse: collapse;
     width: 100%;
-    margin-top: 15px;
+    margin-top: 12px;
+    border-radius: 8px;
+    overflow: hidden;
 }
 
 th {
-    background-color: rgb(46, 184, 169);
-    color: white;
-    padding: 10px;
+    background: linear-gradient(90deg, #2b8eff 0%, #0d62e0 100%);
+    color: #ffffff;
+    padding: 12px 14px;
     text-align: left;
+    font-size: 13px;
 }
 
 td {
-    padding: 8px 10px;
-    border: 1px solid #cccccc;
+    padding: 11px 14px;
+    border-bottom: 1px solid #edf2f7;
+    font-size: 13px;
 }
 
-input[type="text"], input[type="password"], select, textarea {
-    width: 95%;
-    padding: 6px;
-    border: 1px solid rgb(165, 165, 165);
-    border-radius: 5px;
+tr:hover td {
+    background-color: #f7faff;
 }
 
-.btn {
-    padding: 8px 16px;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    background-color: rgb(235, 166, 17);
-    color: rgb(0, 0, 0);
+.badge-halal {
+    background-color: #e6f4ea;
+    color: #137333;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.aksi-link {
+    color: #1877f2;
     font-weight: 600;
     text-decoration: none;
 }
 
-.btn:hover {
-    box-shadow: 2px 3px 0.5px rgb(165, 165, 165);
+.aksi-hapus {
+    color: #e53e3e;
+    font-weight: 600;
+    text-decoration: none;
 }
 
 .error {
-    color: red;
-    font-weight: bold;
+    background-color: #fff5f5;
+    color: #c53030;
+    border-left: 4px solid #e53e3e;
+    padding: 10px 14px;
+    border-radius: 4px;
+    font-size: 13px;
+    font-weight: 600;
 }
 
 .sukses {
-    color: green;
-    font-weight: bold;
+    background-color: #f0fff4;
+    color: #276749;
+    border-left: 4px solid #38a169;
+    padding: 10px 14px;
+    border-radius: 4px;
+    font-size: 13px;
+    font-weight: 600;
 }
