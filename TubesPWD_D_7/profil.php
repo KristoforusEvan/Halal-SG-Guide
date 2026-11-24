@@ -7,28 +7,31 @@ if (!isset($_SESSION['user_id'])) {
     exit;
 }
 
-$user_id =$_SESSION['user_id'];
-$pesan = '';$tipe = '';
+$user_id = $_SESSION['user_id'];
+$pesan = '';
+$tipe = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $nama = trim($_POST['nama'] ?? '');
     $email = trim($_POST['email'] ?? '');
     $asal_kota = trim($_POST['asal_kota'] ?? '');
 
-    if ($nama === '' \vert{}\vert{}$email === '' || $asal_kota === '') {$pesan = '!! Semua kolom profil wajib diisi. !!';
+    if ($nama === '' || $email === '' || $asal_kota === '') {
+        $pesan = '!! Semua kolom profil wajib diisi. !!';
         $tipe = 'error';
     } else {
         $stmt = mysqli_prepare($conn, 'UPDATE users SET nama = ?, email = ?, asal_kota = ? WHERE id = ?');
-        mysqli_stmt_bind_param($stmt, 'sssi', $nama,$email, $asal_kota,$user_id);
+        mysqli_stmt_bind_param($stmt, 'sssi', $nama, $email, $asal_kota, $user_id);
         mysqli_stmt_execute($stmt);
 
-        $_SESSION['nama'] =$nama;
-        $pesan = 'Profil berhasil diperbarui!';$tipe = 'sukses';
+        $_SESSION['nama'] = $nama;
+        $pesan = 'Profil berhasil diperbarui!';
+        $tipe = 'sukses';
     }
 }
 
 $qUser = mysqli_prepare($conn, 'SELECT nama, username, email, asal_kota FROM users WHERE id = ?');
-mysqli_stmt_bind_param($qUser, 'i',$user_id);
+mysqli_stmt_bind_param($qUser, 'i', $user_id);
 mysqli_stmt_execute($qUser);
 $resUser = mysqli_stmt_get_result($qUser);
 $dataUser = mysqli_fetch_assoc($resUser);
