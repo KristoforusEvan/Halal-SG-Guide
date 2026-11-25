@@ -2,30 +2,42 @@
 session_start();
 require 'koneksi.php';
 
-$error = '';
+// Ambil input pencarian dari URL (metode GET)
+$keyword  = trim($_GET['q'] ?? '');
+$kategori = $_GET['kategori'] ?? '';
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $username = trim($_POST['username'] ?? '');
-    $password = $_POST['password'] ?? '';
+// Whitelist kategori: hanya nilai ini yang boleh dipakai di query
+$kategoriValid = array('kuliner', 'masjid', 'wisata');
 
-    if ($username === '' || $password === '') {
-        $error = '!! Harap isi username dan password. !!';
-    } else {
-        $password_enkripsi = md5($password);
-        $stmt = mysqli_prepare($conn, 'SELECT id, nama, username FROM users WHERE username = ? AND password = ?');
-        mysqli_stmt_bind_param($stmt, 'ss', $username, $password_enkripsi);
-        mysqli_stmt_execute($stmt);
-        $result = mysqli_stmt_get_result($stmt);
+// Bangun query bertahap sesuai filter yang diisi
+$sql    = 'SELECT nama, kategori, area_mrt, keterangan, status FROM tempat WHERE 1=1';
+$tipe   = '';
+$params = array();
 
-        if ($row = mysqli_fetch_assoc($result)) {
-            $_SESSION['user_id'] = $row['id'];
-            $_SESSION['nama'] = $row['nama'];
-            $_SESSION['username'] = $row['username'];
-        } else {
-            $error = '!! Username atau password salah. !!';
-        }
-    }
+if ($keyword !== '') {
+    $sql     .= ' AND (nama LIKE ? OR area_mrt LIKE ?)';
+    $like     = '%' . $keyword . '%';
+    $tipe    .= 'ss';
+    $params[] = $like;
+    $params[] = $like;
 }
+if (in_array($kategori, $kategoriValid, true)) {
+    $sql     .= ' AND kategori = ?';
+    $tipe    .= 's';
+    $params[] = $kategori;
+}
+$sql .= ' ORDER BY kategori, nama LIMIT 30';
+
+$stmt = mysqli_prepare($conn, $sql);
+if ($tipe !== '') {
+    // Tanda ... memecah array $params jadi argumen terpisah
+    mysqli_stmt_bind_param($stmt, $tipe, ...$params);
+}
+mysqli_stmt_execute($stmt);
+$hasil  = mysqli_stmt_get_result($stmt);
+$jumlah = mysqli_num_rows($hasil);
+
+$sudahLogin = isset($_SESSION['user_id']);
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
@@ -33,139 +45,73 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <title>Halal SG Guide - Panduan Wisata Halal Singapura</title>
-    <link rel="stylesheet" type="text/css" href="css/style.css?v=3" />
-    <script type="text/javascript" src="js/validasi.js"></script>
+    <link rel="stylesheet" type="text/css" href="css/style.css?v=4" />
 </head>
 <body>
-    <?php if (isset($_SESSION['user_id'])) { ?>
-        <div id="header">
-            <h1>Halal SG Guide - Panduan Wisata Muslim Singapura</h1>
-            <p>Informasi Kuliner Halal Terverifikasi MUIS &amp; Lokasi Masjid Terdekat</p>
-        </div>
+    <div id="header">
+        <h1>Halal SG Guide</h1>
+        <p>Cari kuliner halal dan masjid terdekat selama liburan di Singapura</p>
+    </div>
 
-        <div id="nav">
-            <a href="index.php">Homepage</a>
-            <a href="makanan.php">Cari Makanan Halal (CRUD 1)</a>
-            <a href="masjid.php">Cari Masjid &amp; Jadwal Ibadah (CRUD 2)</a>
+    <!-- Navbar berubah sesuai status login -->
+    <div id="nav">
+        <a href="index.php">Homepage</a>
+        <?php if ($sudahLogin) { ?>
+            <a href="makanan.php">Rencana Kuliner</a>
+            <a href="masjid.php">Jadwal Masjid</a>
             <a href="profil.php">Profil Saya</a>
             <a href="logout.php">Logout</a>
-        </div>
+        <?php } else { ?>
+            <a href="login.php">Login</a>
+            <a href="register.php">Daftar</a>
+        <?php } ?>
+    </div>
 
-        <div class="container">
-            <h2>Selamat Datang, <?php echo htmlspecialchars($_SESSION['nama']); ?>!</h2>
-            <p>Rencanakan perjalanan nyaman Anda di Singapura dengan panduan sumber terverifikasi resmi.</p>
+    <div class="container">
+        <?php if ($sudahLogin) { ?>
+            <p>Halo, <strong><?php echo htmlspecialchars($_SESSION['nama']); ?></strong>!</p>
+        <?php } ?>
 
-            <h3>Rekomendasi Kuliner Bersertifikat Halal (Sumber: MUIS Singapore)</h3>
-            <table>
-                <tr>
-                    <th>Nama Restoran</th>
-                    <th>Area / MRT Terdekat</th>
-                    <th>Status Verifikasi</th>
-                    <th>Menu Andalan</th>
-                </tr>
-                <tr>
-                    <td><strong>Zam Zam Restaurant</strong></td>
-                    <td>Bugis MRT (North Bridge Rd)</td>
-                    <td><span class="badge-halal">Sertifikat Halal MUIS</span></td>
-                    <td>Murtabak Rusa &amp; Nasi Briyani</td>
-                </tr>
-                <tr>
-                    <td><strong>Hajah Maimunah</strong></td>
-                    <td>Bugis / Jalan Pisang</td>
-                    <td><span class="badge-halal">Sertifikat Halal MUIS</span></td>
-                    <td>Nasi Padang &amp; Tahu Telur</td>
-                </tr>
-                <tr>
-                    <td><strong>Encik Tan</strong></td>
-                    <td>Orchard / Bugis Junction</td>
-                    <td><span class="badge-halal">Sertifikat Halal MUIS</span></td>
-                    <td>Laksa &amp; Hainanese Chicken Rice</td>
-                </tr>
-            </table>
-
-            <h3>Rekomendasi Masjid Utama di Kawasan Wisata</h3>
-            <table>
-                <tr>
-                    <th>Nama Masjid</th>
-                    <th>Kawasan Wisata</th>
-                    <th>MRT Terdekat</th>
-                    <th>Fasilitas</th>
-                </tr>
-                <tr>
-                    <td><strong>Masjid Sultan</strong></td>
-                    <td>Kampong Glam / Bugis</td>
-                    <td>Bugis MRT (EW12 / DT14)</td>
-                    <td>Ruang Sholat Luas, Tempat Wudhu Nyaman</td>
-                </tr>
-                <tr>
-                    <td><strong>Masjid Al-Falah</strong></td>
-                    <td>Orchard Road</td>
-                    <td>Somerset MRT (NS23)</td>
-                    <td>Akses Strategis di Pusat Belanja Orchard</td>
-                </tr>
-                <tr>
-                    <td><strong>Masjid Jamae (Chulia)</strong></td>
-                    <td>Chinatown</td>
-                    <td>Chinatown MRT (NE4 / DT19)</td>
-                    <td>Masjid Bersejarah di Tengah Chinatown</td>
-                </tr>
-            </table>
-        </div>
-    <?php } else { ?>
-        <div class="auth-wrapper">
-            <div class="auth-card">
-                <div class="auth-left">
-                    <div class="brand-tag">HALAL SG GUIDE &bull; SINGAPORE</div>
-                    <div class="auth-center-text">
-                        <p class="auth-arabic">Assalamu'alaikum</p>
-                        <h1 class="auth-title">WELCOME BACK</h1>
-                        <div class="auth-divider"></div>
-                        <p class="auth-desc">
-                            Jelajahi keindahan Singapura dengan tenang. Temukan kuliner bersertifikat halal MUIS dan lokasi masjid terdekat dalam satu panduan terpercaya.
-                        </p>
-                    </div>
-                    <div class="auth-highlights">
-                        <div class="highlight-item">
-                            <strong>100% MUIS</strong>
-                            Kuliner Terverifikasi
-                        </div>
-                        <div class="highlight-item">
-                            <strong>70+ Masjid</strong>
-                            Panduan Lokasi Sholat
-                        </div>
-                        <div class="highlight-item">
-                            <strong>MRT Guide</strong>
-                            Rute Ramah Muslim
-                        </div>
-                    </div>
+        <!-- Form pencarian -->
+        <div class="card-form">
+            <form action="index.php" method="get">
+                <div class="form-group">
+                    <label for="q">Cari nama tempat / stasiun MRT</label>
+                    <input type="text" id="q" name="q" value="<?php echo htmlspecialchars($keyword); ?>" />
                 </div>
+                <div class="form-group">
+                    <label for="kategori">Kategori</label>
+                    <select id="kategori" name="kategori">
+                        <option value="">Semua</option>
+                        <option value="kuliner"<?php if ($kategori === 'kuliner') echo ' selected="selected"'; ?>>Kuliner Halal</option>
+                        <option value="masjid"<?php if ($kategori === 'masjid') echo ' selected="selected"'; ?>>Masjid</option>
+                        <option value="wisata"<?php if ($kategori === 'wisata') echo ' selected="selected"'; ?>>Wisata</option>
+                    </select>
+                </div>
+                <div><input type="submit" class="btn" value="Cari" /></div>
+            </form>
+        </div>
 
-                <div class="auth-right">
-                    <h2 class="form-heading">Login Account</h2>
-                    <p class="form-subtext">Masuk menggunakan akun wisatawan Anda untuk mengelola rencana kuliner dan jadwal ibadah.</p>
+        <h2>Hasil (<?php echo $jumlah; ?> tempat)</h2>
 
-                    <?php
-                    if ($error !== '') {
-                        echo '<p class="error">' . htmlspecialchars($error) . '</p>';
-                    }
-                    ?>
-
-                    <form action="index.php" method="post" onsubmit="return fn_ValLogin();">
-                        <div class="input-box">
-                            <input type="text" id="username" name="username" placeholder="Username" />
-                        </div>
-                        <div class="input-box">
-                            <input type="password" id="password" name="password" placeholder="Password" />
-                        </div>
-                        <input type="submit" class="btn-pill" value="Login Sekarang" />
-                    </form>
-
-                    <div class="auth-footer">
-                        Belum memiliki akun? <a href="register.php">Daftar di sini</a>
-                    </div>
+        <!-- Daftar tempat dalam bentuk kartu -->
+        <div class="grid-tempat">
+            <?php while ($row = mysqli_fetch_assoc($hasil)) { ?>
+            <div class="kartu-tempat">
+                <div class="kartu-gambar kat-<?php echo htmlspecialchars($row['kategori']); ?>"></div>
+                <div class="kartu-isi">
+                    <span class="badge-halal"><?php echo htmlspecialchars($row['status']); ?></span>
+                    <h3><?php echo htmlspecialchars($row['nama']); ?></h3>
+                    <p class="kartu-mrt"><?php echo htmlspecialchars($row['area_mrt']); ?></p>
+                    <p><?php echo htmlspecialchars($row['keterangan']); ?></p>
                 </div>
             </div>
+            <?php } ?>
         </div>
-    <?php } ?>
+
+        <?php if ($jumlah === 0) { ?>
+            <p class="error">Tidak ada tempat yang cocok. Coba kata kunci lain.</p>
+        <?php } ?>
+    </div>
 </body>
 </html>
