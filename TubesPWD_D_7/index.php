@@ -1,41 +1,25 @@
 <?php
 session_start();
-require 'koneksi.php';
+require 'data_tempat.php'; // berisi array $daftarTempat
 
 // Ambil input pencarian dari URL (metode GET)
 $keyword  = trim($_GET['q'] ?? '');
 $kategori = $_GET['kategori'] ?? '';
 
-// Whitelist kategori: hanya nilai ini yang boleh dipakai di query
-$kategoriValid = array('kuliner', 'masjid', 'wisata');
-
-// Bangun query bertahap sesuai filter yang diisi
-$sql    = 'SELECT nama, kategori, area_mrt, keterangan, status FROM tempat WHERE 1=1';
-$tipe   = '';
-$params = array();
-
-if ($keyword !== '') {
-    $sql     .= ' AND (nama LIKE ? OR area_mrt LIKE ?)';
-    $like     = '%' . $keyword . '%';
-    $tipe    .= 'ss';
-    $params[] = $like;
-    $params[] = $like;
+// Saring data sesuai keyword dan kategori
+$hasilTempat = array();
+foreach ($daftarTempat as $t) {
+    // Lewati kalau kategori dipilih tapi tidak cocok
+    if ($kategori !== '' && $t['kategori'] !== $kategori) {
+        continue;
+    }
+    // Lewati kalau keyword diisi tapi tidak ada di nama maupun area MRT (tidak peduli huruf besar/kecil)
+    if ($keyword !== '' && mb_stripos($t['nama'], $keyword) === false && mb_stripos($t['area_mrt'], $keyword) === false) {
+        continue;
+    }
+    $hasilTempat[] = $t;
 }
-if (in_array($kategori, $kategoriValid, true)) {
-    $sql     .= ' AND kategori = ?';
-    $tipe    .= 's';
-    $params[] = $kategori;
-}
-$sql .= ' ORDER BY kategori, nama LIMIT 30';
-
-$stmt = mysqli_prepare($conn, $sql);
-if ($tipe !== '') {
-    // Tanda ... memecah array $params jadi argumen terpisah
-    mysqli_stmt_bind_param($stmt, $tipe, ...$params);
-}
-mysqli_stmt_execute($stmt);
-$hasil  = mysqli_stmt_get_result($stmt);
-$jumlah = mysqli_num_rows($hasil);
+$jumlah = count($hasilTempat);
 
 $sudahLogin = isset($_SESSION['user_id']);
 ?>
@@ -45,7 +29,7 @@ $sudahLogin = isset($_SESSION['user_id']);
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <title>Halal SG Guide - Panduan Wisata Halal Singapura</title>
-    <link rel="stylesheet" type="text/css" href="css/style.css?v=4" />
+    <link rel="stylesheet" type="text/css" href="css/style.css?v=5" />
 </head>
 <body>
     <div id="header">
@@ -96,9 +80,14 @@ $sudahLogin = isset($_SESSION['user_id']);
 
         <!-- Daftar tempat dalam bentuk kartu -->
         <div class="grid-tempat">
-            <?php while ($row = mysqli_fetch_assoc($hasil)) { ?>
+            <?php foreach ($hasilTempat as $row) { ?>
             <div class="kartu-tempat">
-                <div class="kartu-gambar kat-<?php echo htmlspecialchars($row['kategori']); ?>"></div>
+                <!-- Kotak gambar: kalau foto kosong, tetap tampil sebagai kotak warna sesuai kategori -->
+                <div class="kartu-gambar kat-<?php echo htmlspecialchars($row['kategori']); ?>">
+                    <?php if (!empty($row['foto'])) { ?>
+                        <img src="img/<?php echo htmlspecialchars($row['foto']); ?>" alt="<?php echo htmlspecialchars($row['nama']); ?>" />
+                    <?php } ?>
+                </div>
                 <div class="kartu-isi">
                     <span class="badge-halal"><?php echo htmlspecialchars($row['status']); ?></span>
                     <h3><?php echo htmlspecialchars($row['nama']); ?></h3>

@@ -1,0 +1,50 @@
+<?php
+// Daftar tempat untuk homepage.
+// Mau tambah konten? Salin satu blok array(...) di bawah, tempel di bawahnya, lalu ganti isinya.
+// kategori hanya boleh: 'kuliner', 'masjid', atau 'wisata'
+// Jangan lupa tanda koma di akhir tiap blok. Kalau teks ada tanda petik ('), tulis \'
+$daftarTempat = array(
+    array(
+        'nama'       => 'Zam Zam Restaurant',
+        'kategori'   => 'kuliner',
+        'area_mrt'   => 'Bugis MRT (North Bridge Rd)',
+        'keterangan' => 'Murtabak Rusa & Nasi Briyani',
+        'status'     => 'Sertifikat Halal MUIS'
+    ),
+    array(
+        'nama'       => 'Hajah Maimunah',
+        'kategori'   => 'kuliner',
+        'area_mrt'   => 'Bugis / Jalan Pisang',
+        'keterangan' => 'Nasi Padang & Tahu Telur',
+        'status'     => 'Sertifikat Halal MUIS'
+    ),
+    array(
+        'nama'       => 'Encik Tan',
+        'kategori'   => 'kuliner',
+        'area_mrt'   => 'Orchard / Bugis Junction',
+        'keterangan' => 'Laksa & Hainanese Chicken Rice',
+        'status'     => 'Sertifikat Halal MUIS'
+    ),
+    array(
+        'nama'       => 'Masjid Sultan',
+        'kategori'   => 'masjid',
+        'area_mrt'   => 'Bugis MRT (EW12 / DT14)',
+        'keterangan' => 'Ruang sholat luas, tempat wudhu nyaman',
+        'status'     => 'Masjid'
+    ),
+    array(
+        'nama'       => 'Masjid Al-Falah',
+        'kategori'   => 'masjid',
+        'area_mrt'   => 'Somerset MRT (NS23)',
+        'keterangan' => 'Akses strategis di pusat belanja Orchard',
+        'status'     => 'Masjid'
+    ),
+    array(
+        'nama'       => 'Masjid Jamae (Chulia)',
+        'kategori'   => 'masjid',
+        'area_mrt'   => 'Chinatown MRT (NE4 / DT19)',
+        'keterangan' => 'Masjid bersejarah di tengah Chinatown',
+        'status'     => 'Masjid'
+    )
+);
+?>  
