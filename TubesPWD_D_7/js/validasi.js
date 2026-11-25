@@ -8,7 +8,7 @@ function hapusPesanError() {
 
 // Pasang listener "input" ke field yang ada di halaman
 document.addEventListener("DOMContentLoaded", function () {
-    var daftarInput = ["nama", "username", "email", "password", "asal_kota"];
+    var daftarInput = ["username", "email", "password"];
     for (var i = 0; i < daftarInput.length; i++) {
         var elemen = document.getElementById(daftarInput[i]);
         if (elemen) {
@@ -17,29 +17,21 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 });
 
-// Validasi form register (disamakan dengan aturan di register.php)
+// Validasi form register: cukup username, email, dan password (min 8 karakter)
 function fn_ValRegister() {
     var daftarError = [];
-    var nama = document.getElementById("nama").value.trim();
     var username = document.getElementById("username").value.trim();
     var email = document.getElementById("email").value.trim();
     var password = document.getElementById("password").value;
-    var asalKota = document.getElementById("asal_kota").value.trim();
     var wadahError = document.getElementById("pesanError");
 
-    // Nama: hanya huruf dan spasi (sama persis dengan preg_match di PHP)
-    var polaNama = /^[a-zA-Z ]+$/;
-    // Email: huruf kecil dan format valid
+    var polaUsername = /^[a-zA-Z0-9_]+$/;
     var polaEmail = /^[a-z0-9][a-z0-9_\.-]{0,}[a-z0-9]@[a-z0-9][a-z0-9_\.-]{0,}[a-z0-9][\.][a-z0-9]{2,4}$/;
-
-    if (nama === "") {
-        daftarError.push("Nama lengkap wajib diisi.");
-    } else if (!polaNama.test(nama)) {
-        daftarError.push("Nama lengkap hanya boleh berisi huruf dan spasi.");
-    }
 
     if (username === "") {
         daftarError.push("Username wajib diisi.");
+    } else if (!polaUsername.test(username)) {
+        daftarError.push("Username hanya boleh berisi huruf, angka, dan underscore (_).");
     }
 
     if (email === "") {
@@ -50,15 +42,10 @@ function fn_ValRegister() {
 
     if (password === "") {
         daftarError.push("Password wajib diisi.");
-    } else if (password.length < 6) {
-        daftarError.push("Password minimal 6 karakter.");
+    } else if (password.length < 8) {
+        daftarError.push("Password minimal 8 karakter.");
     }
 
-    if (asalKota === "") {
-        daftarError.push("Asal kota wajib diisi.");
-    }
-
-    // Kalau ada error, tampilkan dan batalkan pengiriman form
     if (daftarError.length > 0) {
         wadahError.innerHTML = "<p class=\"error\">" + daftarError.join("<br />") + "</p>";
         return false;
@@ -68,16 +55,20 @@ function fn_ValRegister() {
     return true;
 }
 
-// Validasi form login: pakai username (bukan email), sesuai form login.php
+// Validasi form login: cukup email dan password
 function fn_ValLogin() {
     var daftarError = [];
-    var username = document.getElementById("username").value.trim();
+    var email = document.getElementById("email").value.trim();
     var password = document.getElementById("password").value;
     var wadahError = document.getElementById("pesanError");
+    var polaEmail = /^[a-z0-9][a-z0-9_\.-]{0,}[a-z0-9]@[a-z0-9][a-z0-9_\.-]{0,}[a-z0-9][\.][a-z0-9]{2,4}$/;
 
-    if (username === "") {
-        daftarError.push("Username belum diisi.");
+    if (email === "") {
+        daftarError.push("Email belum diisi.");
+    } else if (!polaEmail.test(email)) {
+        daftarError.push("Format email harus huruf kecil dan valid (contoh: nama@gmail.com).");
     }
+
     if (password === "") {
         daftarError.push("Password belum diisi.");
     }

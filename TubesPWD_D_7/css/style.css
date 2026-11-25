@@ -208,33 +208,39 @@ body {
     text-decoration: underline;
 }
 
-/* ================= HALAMAN UTAMA / DASHBOARD (SETELAH LOGIN) ================= */
+/* ================= HALAMAN UTAMA / DASHBOARD (STICKY HEADER & NAV) ================= */
 #header {
-    background: linear-gradient(135deg, rgba(11, 94, 66, 0.92) 0%, rgba(6, 59, 41, 0.95) 100%),
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    background: linear-gradient(135deg, rgba(11, 94, 66, 0.96) 0%, rgba(6, 59, 41, 0.98) 100%),
                 url('../img/bg-singapore.jpg') center/cover no-repeat;
     color: #ffffff;
-    padding: 32px 20px;
+    padding: 20px 20px;
     text-align: center;
     border-bottom: 4px solid #d4af37;
 }
 
 #header h1 {
-    margin: 0 0 6px 0;
-    font-size: 26px;
+    margin: 0 0 4px 0;
+    font-size: 24px;
     letter-spacing: 0.5px;
 }
 
 #header p {
     margin: 0;
-    font-size: 14px;
+    font-size: 13px;
     color: #f9e28c;
 }
 
 #nav {
+    position: sticky;
+    top: 93px;
+    z-index: 999;
     background-color: #ffffff;
-    padding: 14px 20px;
+    padding: 12px 20px;
     text-align: center;
-    box-shadow: 0 3px 10px rgba(11, 94, 66, 0.08);
+    box-shadow: 0 4px 12px rgba(11, 94, 66, 0.12);
     border-bottom: 1px solid #e1ece6;
 }
 
@@ -413,8 +419,16 @@ tr:hover td {
 }
 
 .kartu-gambar {
-    height: 90px;
+    height: 150px;
     background-color: #d8ecdf;
+    overflow: hidden;
+}
+
+.kartu-gambar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
 }
 
 /* Ganti warna latar sesuai kategori; nanti bisa diganti foto lewat background-image */
@@ -425,4 +439,3 @@ tr:hover td {
 .kartu-isi h3 { margin: 8px 0 2px 0; font-size: 15px; color: #1f2d27; }
 .kartu-mrt { color: #5c6e66; font-size: 12px; margin: 0 0 6px 0; }
 .kartu-isi p { font-size: 13px; margin: 0; }
-

@@ -1,14 +1,15 @@
-CREATE DATABASE IF NOT EXISTS db_wisata_halal_sg;
+DROP DATABASE IF EXISTS db_wisata_halal_sg;
+CREATE DATABASE db_wisata_halal_sg;
 USE db_wisata_halal_sg;
 
--- Akun pengguna: untuk daftar dan login cukup nama, email, password.
--- username dan asal_kota opsional (diisi nanti lewat halaman profil).
+-- Akun pengguna: daftar cukup username, email, password; login pakai email & password.
+-- nama dan asal_kota opsional (bisa diisi nanti lewat halaman profil).
 CREATE TABLE users (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    nama VARCHAR(100) NOT NULL,
+    username VARCHAR(50) NOT NULL UNIQUE,
     email VARCHAR(100) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
-    username VARCHAR(50) NULL,
+    nama VARCHAR(100) NULL,
     asal_kota VARCHAR(100) NULL
 );
 

@@ -6,25 +6,23 @@ $pesan = '';
 $tipe = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $nama = trim($_POST['nama'] ?? '');
     $username = trim($_POST['username'] ?? '');
     $email = trim($_POST['email'] ?? '');
     $password = $_POST['password'] ?? '';
-    $asal_kota = trim($_POST['asal_kota'] ?? '');
 
-    if ($nama === '' || $username === '' || $email === '' || $password === '' || $asal_kota === '') {
-        $pesan = '!! Harap lengkapi semua data registrasi. !!';
+    if ($username === '' || $email === '' || $password === '') {
+        $pesan = '!! Harap lengkapi username, email, dan password. !!';
         $tipe = 'error';
-    } elseif (!preg_match("/^[a-zA-Z ]*$/", $nama)) {
-        // Nama hanya boleh huruf dan spasi
-        $pesan = '!! Nama hanya boleh mengandung huruf dan spasi. !!';
+    } elseif (!preg_match("/^[a-zA-Z0-9_]+$/", $username)) {
+        $pesan = '!! Username hanya boleh berisi huruf, angka, dan underscore (_). !!';
         $tipe = 'error';
     } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        // Validasi email di sisi server (JS bisa dilewati, PHP tidak)
         $pesan = '!! Format email tidak valid. !!';
         $tipe = 'error';
+    } elseif (strlen($password) < 8) {
+        $pesan = '!! Password minimal 8 karakter. !!';
+        $tipe = 'error';
     } else {
-        // Cek apakah username atau email sudah dipakai
         $cek = mysqli_prepare($conn, 'SELECT id FROM users WHERE username = ? OR email = ?');
         mysqli_stmt_bind_param($cek, 'ss', $username, $email);
         mysqli_stmt_execute($cek);
@@ -34,14 +32,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $pesan = '!! Username atau Email sudah terdaftar. Silakan gunakan yang lain. !!';
             $tipe = 'error';
         } else {
-            // Enkripsi password pakai bcrypt (otomatis ada salt), bukan md5
             $password_enkripsi = password_hash($password, PASSWORD_DEFAULT);
-            $stmt = mysqli_prepare($conn, 'INSERT INTO users (nama, username, email, password, asal_kota) VALUES (?, ?, ?, ?, ?)');
-            mysqli_stmt_bind_param($stmt, 'sssss', $nama, $username, $email, $password_enkripsi, $asal_kota);
+            $stmt = mysqli_prepare($conn, 'INSERT INTO users (username, email, password) VALUES (?, ?, ?)');
+            mysqli_stmt_bind_param($stmt, 'sss', $username, $email, $password_enkripsi);
             mysqli_stmt_execute($stmt);
 
             if (mysqli_stmt_affected_rows($stmt) === 1) {
-                $pesan = 'Registrasi berhasil! Silakan login menggunakan akun Anda.';
+                $pesan = 'Registrasi berhasil! Silakan login menggunakan email dan password Anda.';
                 $tipe = 'sukses';
             } else {
                 $pesan = '!! Gagal menyimpan data registrasi. !!';
@@ -57,8 +54,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <title>Registrasi - Panduan Wisata Halal Singapura</title>
-    <link rel="stylesheet" type="text/css" href="css/style.css?v=4" />
-    <script type="text/javascript" src="js/validasi.js"></script>
+    <link rel="stylesheet" type="text/css" href="css/style.css?v=5" />
+    <script type="text/javascript" src="js/validasi.js?v=3"></script>
 </head>
 <body>
     <div class="auth-wrapper">
@@ -91,13 +88,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             <div class="auth-right">
                 <h2 class="form-heading">Create Account</h2>
-                <p class="form-subtext">Lengkapi data di bawah ini untuk mendaftar sebagai wisatawan baru.</p>
+                <p class="form-subtext">Buat akun baru cukup dengan username, email, dan password.</p>
 
-                <!-- Wadah pesan error dari JavaScript (validasi.js) -->
                 <div id="pesanError"></div>
 
                 <?php
-                // Pesan dari PHP (error atau sukses)
                 if ($pesan !== '') {
                     echo '<p class="' . $tipe . '">' . htmlspecialchars($pesan) . '</p>';
                 }
@@ -105,19 +100,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 <form action="register.php" method="post" onsubmit="return fn_ValRegister();">
                     <div class="input-box">
-                        <input type="text" id="nama" name="nama" placeholder="Nama Lengkap (Huruf &amp; Spasi)" />
-                    </div>
-                    <div class="input-box">
                         <input type="text" id="username" name="username" placeholder="Username" />
                     </div>
                     <div class="input-box">
                         <input type="text" id="email" name="email" placeholder="Email (contoh: nama@gmail.com)" />
                     </div>
                     <div class="input-box">
-                        <input type="password" id="password" name="password" placeholder="Password" />
-                    </div>
-                    <div class="input-box">
-                        <input type="text" id="asal_kota" name="asal_kota" placeholder="Asal Kota (Indonesia)" />
+                        <input type="password" id="password" name="password" placeholder="Password (minimal 8 karakter)" />
                     </div>
                     <div><input type="submit" class="btn-pill" value="Daftar Sekarang" /></div>
                 </form>

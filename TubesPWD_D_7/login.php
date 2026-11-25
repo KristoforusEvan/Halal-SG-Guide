@@ -2,7 +2,6 @@
 session_start();
 require 'koneksi.php';
 
-// Kalau sudah login, tidak perlu lihat halaman login lagi
 if (isset($_SESSION['user_id'])) {
     header('Location: index.php');
     exit;
@@ -11,28 +10,30 @@ if (isset($_SESSION['user_id'])) {
 $error = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $username = trim($_POST['username'] ?? '');
+    $email = trim($_POST['email'] ?? '');
     $password = $_POST['password'] ?? '';
 
-    if ($username === '' || $password === '') {
-        $error = '!! Harap isi username dan password. !!';
+    if ($email === '' || $password === '') {
+        $error = '!! Harap isi email dan password. !!';
+    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $error = '!! Format email tidak valid. !!';
     } else {
-        // Ambil user berdasarkan username SAJA, lalu cek password dengan password_verify
-        $stmt = mysqli_prepare($conn, 'SELECT id, nama, username, password FROM users WHERE username = ?');
-        mysqli_stmt_bind_param($stmt, 's', $username);
+        $stmt = mysqli_prepare($conn, 'SELECT id, username, email, nama, password FROM users WHERE email = ?');
+        mysqli_stmt_bind_param($stmt, 's', $email);
         mysqli_stmt_execute($stmt);
         $result = mysqli_stmt_get_result($stmt);
         $row = mysqli_fetch_assoc($result);
 
         if ($row && password_verify($password, $row['password'])) {
-            session_regenerate_id(true); // cegah session fixation
+            session_regenerate_id(true);
             $_SESSION['user_id']  = $row['id'];
-            $_SESSION['nama']     = $row['nama'];
             $_SESSION['username'] = $row['username'];
+            $_SESSION['email']    = $row['email'];
+            $_SESSION['nama']     = !empty($row['nama']) ? $row['nama'] : $row['username'];
             header('Location: index.php');
             exit;
         } else {
-            $error = '!! Username atau password salah. !!';
+            $error = '!! Email atau password salah. !!';
         }
     }
 }
@@ -43,8 +44,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <title>Login - Halal SG Guide</title>
-    <link rel="stylesheet" type="text/css" href="css/style.css?v=4" />
-    <script type="text/javascript" src="js/validasi.js"></script>
+    <link rel="stylesheet" type="text/css" href="css/style.css?v=5" />
+    <script type="text/javascript" src="js/validasi.js?v=2"></script>
 </head>
 <body>
     <div class="auth-wrapper">
@@ -77,13 +78,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             <div class="auth-right">
                 <h2 class="form-heading">Login Account</h2>
-                <p class="form-subtext">Masuk menggunakan akun wisatawan Anda untuk mengelola rencana kuliner dan jadwal ibadah.</p>
+                <p class="form-subtext">Masuk menggunakan email dan password Anda untuk mengelola rencana kuliner dan jadwal ibadah.</p>
 
-                <!-- Wadah pesan error dari JavaScript (validasi.js) -->
                 <div id="pesanError"></div>
 
                 <?php
-                // Pesan error dari PHP (misal password salah)
                 if ($error !== '') {
                     echo '<p class="error">' . htmlspecialchars($error) . '</p>';
                 }
@@ -91,7 +90,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 <form action="login.php" method="post" onsubmit="return fn_ValLogin();">
                     <div class="input-box">
-                        <input type="text" id="username" name="username" placeholder="Username" />
+                        <input type="text" id="email" name="email" placeholder="Email (contoh: nama@gmail.com)" />
                     </div>
                     <div class="input-box">
                         <input type="password" id="password" name="password" placeholder="Password" />
