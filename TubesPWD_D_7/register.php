@@ -15,11 +15,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($nama === '' || $username === '' || $email === '' || $password === '' || $asal_kota === '') {
         $pesan = '!! Harap lengkapi semua data registrasi. !!';
         $tipe = 'error';
+    } elseif (!preg_match("/^[a-zA-Z ]*$/", $nama)) {
+        // Nama hanya boleh huruf dan spasi
+        $pesan = '!! Nama hanya boleh mengandung huruf dan spasi. !!';
+        $tipe = 'error';
     } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         // Validasi email di sisi server (JS bisa dilewati, PHP tidak)
         $pesan = '!! Format email tidak valid. !!';
         $tipe = 'error';
     } else {
+        // Cek apakah username atau email sudah dipakai
         $cek = mysqli_prepare($conn, 'SELECT id FROM users WHERE username = ? OR email = ?');
         mysqli_stmt_bind_param($cek, 'ss', $username, $email);
         mysqli_stmt_execute($cek);
@@ -29,6 +34,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $pesan = '!! Username atau Email sudah terdaftar. Silakan gunakan yang lain. !!';
             $tipe = 'error';
         } else {
+            // Enkripsi password pakai bcrypt (otomatis ada salt), bukan md5
             $password_enkripsi = password_hash($password, PASSWORD_DEFAULT);
             $stmt = mysqli_prepare($conn, 'INSERT INTO users (nama, username, email, password, asal_kota) VALUES (?, ?, ?, ?, ?)');
             mysqli_stmt_bind_param($stmt, 'sssss', $nama, $username, $email, $password_enkripsi, $asal_kota);
@@ -51,7 +57,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <title>Registrasi - Panduan Wisata Halal Singapura</title>
-    <link rel="stylesheet" type="text/css" href="css/style.css?v=3" />
+    <link rel="stylesheet" type="text/css" href="css/style.css?v=4" />
     <script type="text/javascript" src="js/validasi.js"></script>
 </head>
 <body>
@@ -87,7 +93,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <h2 class="form-heading">Create Account</h2>
                 <p class="form-subtext">Lengkapi data di bawah ini untuk mendaftar sebagai wisatawan baru.</p>
 
+                <!-- Wadah pesan error dari JavaScript (validasi.js) -->
+                <div id="pesanError"></div>
+
                 <?php
+                // Pesan dari PHP (error atau sukses)
                 if ($pesan !== '') {
                     echo '<p class="' . $tipe . '">' . htmlspecialchars($pesan) . '</p>';
                 }
@@ -109,7 +119,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <div class="input-box">
                         <input type="text" id="asal_kota" name="asal_kota" placeholder="Asal Kota (Indonesia)" />
                     </div>
-                    <input type="submit" class="btn-pill" value="Daftar Sekarang" />
+                    <div><input type="submit" class="btn-pill" value="Daftar Sekarang" /></div>
                 </form>
 
                 <div class="auth-footer">
@@ -120,5 +130,3 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
 </body>
 </html>
-
-<!-- tes joe disini -->
