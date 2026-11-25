@@ -151,5 +151,3 @@ $resultList = mysqli_stmt_get_result($qList);
     </div>
 </body>
 </html>
-
-<!-- coba aja //cedric  halo halo--> 

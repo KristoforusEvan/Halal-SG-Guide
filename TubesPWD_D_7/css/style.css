@@ -395,3 +395,34 @@ tr:hover td {
     font-size: 13px;
     font-weight: 600;
 }
+
+/* ===== HOMEPAGE: KARTU TEMPAT (ditambah oleh backend) ===== */ 
+
+.grid-tempat {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 16px;
+    margin-top: 16px;
+}
+
+.kartu-tempat {
+    background-color: #ffffff;
+    border: 1px solid #d5e5dc;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.kartu-gambar {
+    height: 90px;
+    background-color: #d8ecdf;
+}
+
+/* Ganti warna latar sesuai kategori; nanti bisa diganti foto lewat background-image */
+.kartu-gambar.kat-masjid { background-color: #f6ecc8; }
+.kartu-gambar.kat-wisata { background-color: #dbe7f5; }
+
+.kartu-isi { padding: 12px 14px 14px; }
+.kartu-isi h3 { margin: 8px 0 2px 0; font-size: 15px; color: #1f2d27; }
+.kartu-mrt { color: #5c6e66; font-size: 12px; margin: 0 0 6px 0; }
+.kartu-isi p { font-size: 13px; margin: 0; }
+
