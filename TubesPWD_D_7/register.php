@@ -15,8 +15,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($nama === '' || $username === '' || $email === '' || $password === '' || $asal_kota === '') {
         $pesan = '!! Harap lengkapi semua data registrasi. !!';
         $tipe = 'error';
-    } elseif (!preg_match("/^[a-zA-Z ]*$/", $nama)) {
-        $pesan = '!! Nama hanya boleh mengandung huruf dan spasi. !!';
+    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        // Validasi email di sisi server (JS bisa dilewati, PHP tidak)
+        $pesan = '!! Format email tidak valid. !!';
         $tipe = 'error';
     } else {
         $cek = mysqli_prepare($conn, 'SELECT id FROM users WHERE username = ? OR email = ?');
@@ -28,7 +29,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $pesan = '!! Username atau Email sudah terdaftar. Silakan gunakan yang lain. !!';
             $tipe = 'error';
         } else {
-            $password_enkripsi = md5($password);
+            $password_enkripsi = password_hash($password, PASSWORD_DEFAULT);
             $stmt = mysqli_prepare($conn, 'INSERT INTO users (nama, username, email, password, asal_kota) VALUES (?, ?, ?, ?, ?)');
             mysqli_stmt_bind_param($stmt, 'sssss', $nama, $username, $email, $password_enkripsi, $asal_kota);
             mysqli_stmt_execute($stmt);
@@ -112,7 +113,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </form>
 
                 <div class="auth-footer">
-                    Sudah punya akun? <a href="index.php">Login di sini</a>
+                    Sudah punya akun? <a href="login.php">Login di sini</a>
                 </div>
             </div>
         </div>
