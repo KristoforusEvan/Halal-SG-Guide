@@ -1,67 +1,62 @@
 <?php
 // profil.php
-//   GET  -> ambil data profil + nama file foto_profil
-//   POST -> perbarui profil + unggah foto profil (multipart/form-data, Bonus 4)
+//   GET  -> Ambil data profil user yang sedang login
+//   POST -> Perbarui username, email, nama, asal_kota, dan upload foto_profil
 require 'fungsi.php';
 require 'koneksi.php';
 
-$user_id = wajibLogin();
+wajibLogin();
+$userId = (int) $_SESSION['user_id'];
 
+// ---------- GET: AMBIL DATA PROFIL ----------
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-    $q = mysqli_prepare($conn, 'SELECT username, email, nama, asal_kota, foto_profil FROM users WHERE id = ?');
-    mysqli_stmt_bind_param($q, 'i', $user_id);
-    mysqli_stmt_execute($q);
-    $data = mysqli_fetch_assoc(mysqli_stmt_get_result($q));
-    if (!$data) {
+    $stmt = mysqli_prepare($conn, 'SELECT id, username, email, nama, asal_kota, role, foto FROM users WHERE id = ?');
+    mysqli_stmt_bind_param($stmt, 'i', $userId);
+    mysqli_stmt_execute($stmt);
+    $row = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt));
+
+    if (!$row) {
         gagal('Data pengguna tidak ditemukan.', 404);
     }
-    if (!empty($data['foto_profil'])) {
-        $data['foto_profil'] = basename($data['foto_profil']);
-    }
-    berhasil('', array('data' => $data));
+
+    $row['foto'] = ($row['foto'] !== null && trim($row['foto']) !== '') ? basename($row['foto']) : 'bg-singapore.jpg';
+    berhasil('', array('data' => $row));
 }
 
+// ---------- POST: UPDATE PROFIL & UPLOAD FOTO ----------
 wajibPost();
 
-$username  = ambilPost('username');
-$email     = strtolower(ambilPost('email'));
-$nama      = ambilPost('nama');
-$asal_kota = ambilPost('asal_kota');
+$username = ambilPost('username');
+$email    = ambilPost('email');
+$nama     = ambilPost('nama');
+$asalKota = ambilPost('asal_kota');
 
-$error = validasiUsername($username);
-if ($error === '') { $error = validasiEmail($email); }
-if ($error === '') { $error = validasiNama($nama); }
-if ($error === '') { $error = validasiAsalKota($asal_kota); }
-if ($error !== '') {
-    gagal($error);
+if (!preg_match('/^[a-zA-Z0-9_]{3,30}$/', $username)) {
+    gagal('Username harus 3-30 karakter (huruf, angka, atau underscore).');
+}
+if (!filter_var($email, FILTER_VALIDATE_EMAIL) || strlen($email) > 100) {
+    gagal('Format email tidak valid.');
+}
+if (strlen($nama) > 100 || strlen($asalKota) > 100) {
+    gagal('Nama lengkap dan asal kota maksimal 100 karakter.');
 }
 
-if ($nama === '')      { $nama = null; }
-if ($asal_kota === '') { $asal_kota = null; }
-
-// Cek keunikan username & email terhadap akun lain
-$cekUser = mysqli_prepare($conn, 'SELECT id FROM users WHERE username = ? AND id <> ?');
-mysqli_stmt_bind_param($cekUser, 'si', $username, $user_id);
-mysqli_stmt_execute($cekUser);
-if (mysqli_num_rows(mysqli_stmt_get_result($cekUser)) > 0) {
-    gagal('Username sudah dipakai akun lain.');
-}
-
-$cekEmail = mysqli_prepare($conn, 'SELECT id FROM users WHERE email = ? AND id <> ?');
-mysqli_stmt_bind_param($cekEmail, 'si', $email, $user_id);
-mysqli_stmt_execute($cekEmail);
-if (mysqli_num_rows(mysqli_stmt_get_result($cekEmail)) > 0) {
-    gagal('Email sudah dipakai akun lain.');
-}
-
-// Ambil nama foto lama terlebih dahulu
-$qLama = mysqli_prepare($conn, 'SELECT foto_profil FROM users WHERE id = ?');
-mysqli_stmt_bind_param($qLama, 'i', $user_id);
+// Ambil foto lama dari database
+$qLama = mysqli_prepare($conn, 'SELECT foto FROM users WHERE id = ?');
+mysqli_stmt_bind_param($qLama, 'i', $userId);
 mysqli_stmt_execute($qLama);
-$rowLama = mysqli_fetch_assoc(mysqli_stmt_get_result($qLama));
-$foto_profil = ($rowLama && !empty($rowLama['foto_profil'])) ? basename($rowLama['foto_profil']) : null;
+$dataLama = mysqli_fetch_assoc(mysqli_stmt_get_result($qLama));
+$fotoAktif = ($dataLama && !empty($dataLama['foto'])) ? basename($dataLama['foto']) : 'bg-singapore.jpg';
 
-// Proses unggah foto baru jika user memilih file di input foto_profil
+// Cek duplikasi username / email milik user lain
+$cek = mysqli_prepare($conn, 'SELECT id FROM users WHERE (username = ? OR email = ?) AND id <> ?');
+mysqli_stmt_bind_param($cek, 'ssi', $username, $email, $userId);
+mysqli_stmt_execute($cek);
+if (mysqli_fetch_assoc(mysqli_stmt_get_result($cek))) {
+    gagal('Username atau email sudah digunakan akun lain.');
+}
+
+// Proses unggah foto profil baru jika dipilih
 if (isset($_FILES['foto_profil']) && $_FILES['foto_profil']['error'] !== UPLOAD_ERR_NO_FILE) {
     $file = $_FILES['foto_profil'];
 
@@ -75,7 +70,6 @@ if (isset($_FILES['foto_profil']) && $_FILES['foto_profil']['error'] !== UPLOAD_
         gagal('Ukuran foto profil maksimal 2 MB.');
     }
 
-    // Validasi tipe MIME asli file menggunakan finfo (bukan sekadar ekstensi)
     $finfo = finfo_open(FILEINFO_MIME_TYPE);
     $mime  = finfo_file($finfo, $file['tmp_name']);
     finfo_close($finfo);
@@ -90,44 +84,28 @@ if (isset($_FILES['foto_profil']) && $_FILES['foto_profil']['error'] !== UPLOAD_
         gagal('Format foto profil harus JPG, PNG, atau WEBP.');
     }
 
-    $folderTujuan = dirname(__DIR__) . DIRECTORY_SEPARATOR . 'img' . DIRECTORY_SEPARATOR . 'profil';
-    if (!is_dir($folderTujuan)) {
-        mkdir($folderTujuan, 0755, true);
-    }
-
-    $namaFileBaru = 'user_' . $user_id . '_' . time() . '.' . $ekstensiDiizinkan[$mime];
+    $folderTujuan = dirname(__DIR__) . DIRECTORY_SEPARATOR . 'img';
+    $namaFileBaru = 'profil_' . $userId . '_' . time() . '_' . mt_rand(100, 999) . '.' . $ekstensiDiizinkan[$mime];
     $pathTujuan   = $folderTujuan . DIRECTORY_SEPARATOR . $namaFileBaru;
 
     if (!move_uploaded_file($file['tmp_name'], $pathTujuan)) {
-        gagal('Gagal menyimpan file foto profil ke direktori server.', 500);
+        gagal('Gagal menyimpan file foto profil ke folder img/.', 500);
     }
 
-    // Hapus file foto lama jika ada agar penyimpanan tetap bersih
-    if ($foto_profil !== null) {
-        $pathLama = $folderTujuan . DIRECTORY_SEPARATOR . $foto_profil;
+    // Hapus file foto profil lama jika bukan gambar bawaan
+    if ($fotoAktif !== 'bg-singapore.jpg' && strpos($fotoAktif, 'profil_') === 0) {
+        $pathLama = $folderTujuan . DIRECTORY_SEPARATOR . $fotoAktif;
         if (is_file($pathLama)) {
             @unlink($pathLama);
         }
     }
 
-    $foto_profil = $namaFileBaru;
+    $fotoAktif = $namaFileBaru;
 }
 
-try {
-    $upd = mysqli_prepare($conn, 'UPDATE users SET username = ?, email = ?, nama = ?, asal_kota = ?, foto_profil = ? WHERE id = ?');
-    mysqli_stmt_bind_param($upd, 'sssssi', $username, $email, $nama, $asal_kota, $foto_profil, $user_id);
-    mysqli_stmt_execute($upd);
-} catch (mysqli_sql_exception $e) {
-    if ($e->getCode() === 1062) {
-        gagal('Username atau email sudah dipakai akun lain.');
-    }
-    throw $e;
-}
+$upd = mysqli_prepare($conn, 'UPDATE users SET username = ?, email = ?, nama = ?, asal_kota = ?, foto = ? WHERE id = ?');
+mysqli_stmt_bind_param($upd, 'sssssi', $username, $email, $nama, $asalKota, $fotoAktif, $userId);
+mysqli_stmt_execute($upd);
 
 $_SESSION['username'] = $username;
-$_SESSION['email']    = $email;
-$_SESSION['nama']     = ($nama !== null) ? $nama : $username;
-
-berhasil('Profil berhasil diperbarui!', array(
-    'foto_profil' => $foto_profil
-));
+berhasil('Profil berhasil diperbarui!', array('foto' => $fotoAktif));

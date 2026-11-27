@@ -868,3 +868,30 @@ tr:hover td {
     width: 22px;
     border-radius: 999px;
 }
+
+
+/* ===== AVATAR PROFIL PENGGUNA ===== */
+.profil-avatar-box {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    margin-bottom: 22px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid #e2ece7;
+}
+
+.profil-avatar-img {
+    width: 84px;
+    height: 84px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid #0b5e42;
+    flex-shrink: 0;
+}
+
+.profil-avatar-input label {
+    display: block;
+    font-weight: 700;
+    margin-bottom: 6px;
+    color: #073829;
+}
