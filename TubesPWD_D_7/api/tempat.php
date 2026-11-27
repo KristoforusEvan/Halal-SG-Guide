@@ -1,9 +1,9 @@
 <?php
 // tempat.php
-//   GET tanpa ?id             -> Daftar & filter tempat untuk Homepage (PUBLIK, tanpa login)
-//   GET dengan ?id=...        -> Detail 1 tempat (PRIVAT, wajib login)
-//   POST aksi=simpan          -> Tambah / Edit konten tempat (Khusus Admin)
-//   POST aksi=hapus           -> Hapus konten tempat (Khusus Admin)
+//   GET tanpa ?id      -> Daftar & filter tempat untuk Homepage (PUBLIK, menyertakan lat & lng)
+//   GET dengan ?id=... -> Detail 1 tempat (PRIVAT, wajib login)
+//   POST aksi=simpan   -> Tambah / Edit konten tempat (Khusus Admin)
+//   POST aksi=hapus    -> Hapus konten tempat (Khusus Admin)
 require 'fungsi.php';
 require 'koneksi.php';
 
@@ -21,7 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
             gagal('ID tempat tidak valid.');
         }
 
-        $stmt = mysqli_prepare($conn, 'SELECT id, nama, kategori, area, harga_estimasi, keterangan, deskripsi, alamat, jam_buka, status, foto FROM tempat WHERE id = ?');
+        $stmt = mysqli_prepare($conn, 'SELECT id, nama, kategori, area, harga_estimasi, lat, lng, keterangan, deskripsi, alamat, jam_buka, status, foto FROM tempat WHERE id = ?');
         mysqli_stmt_bind_param($stmt, 'i', $id);
         mysqli_stmt_execute($stmt);
         $row = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt));
@@ -38,7 +38,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     $kategori = (isset($_GET['kategori']) && is_string($_GET['kategori'])) ? trim($_GET['kategori']) : '';
     $harga    = (isset($_GET['harga']) && is_string($_GET['harga'])) ? trim($_GET['harga']) : '';
 
-    $sql    = 'SELECT id, nama, kategori, area, harga_estimasi, keterangan, deskripsi, alamat, jam_buka, status, foto FROM tempat WHERE 1=1';
+    $sql    = 'SELECT id, nama, kategori, area, harga_estimasi, lat, lng, keterangan, deskripsi, alamat, jam_buka, status, foto FROM tempat WHERE 1=1';
     $types  = '';
     $params = array();
 
@@ -91,7 +91,6 @@ wajibAdmin();
 
 $aksi = ambilPost('aksi');
 
-// DELETE KONTEN
 if ($aksi === 'hapus') {
     $id = ambilPost('id');
     if (!ctype_digit($id)) {
@@ -108,13 +107,14 @@ if ($aksi === 'hapus') {
     berhasil('Konten tempat berhasil dihapus.');
 }
 
-// CREATE / UPDATE KONTEN
 if ($aksi === 'simpan') {
     $id             = ambilPost('id');
     $nama           = ambilPost('nama');
     $kategori       = ambilPost('kategori');
     $area           = ambilPost('area');
     $harga_estimasi = ambilPost('harga_estimasi');
+    $latInput       = ambilPost('lat');
+    $lngInput       = ambilPost('lng');
     $keterangan     = ambilPost('keterangan');
     $deskripsi      = ambilPost('deskripsi');
     $alamat         = ambilPost('alamat');
@@ -145,18 +145,34 @@ if ($aksi === 'simpan') {
         gagal('Alamat lengkap maksimal 200 karakter.');
     }
 
+    // Validasi koordinat opsional (boleh kosong, tapi jika diisi harus angka valid)
+    $lat = null;
+    $lng = null;
+    if ($latInput !== '' || $lngInput !== '') {
+        if (!is_numeric($latInput) || !is_numeric($lngInput)) {
+            gagal('Latitude dan Longitude harus berupa angka desimal (contoh: 1.3023).');
+        }
+        $latFloat = (float) $latInput;
+        $lngFloat = (float) $lngInput;
+        if ($latFloat < -90 || $latFloat > 90 || $lngFloat < -180 || $lngFloat > 180) {
+            gagal('Nilai Latitude (-90 s.d. 90) atau Longitude (-180 s.d. 180) di luar jangkauan.');
+        }
+        $lat = (string) $latFloat;
+        $lng = (string) $lngFloat;
+    }
+
     if ($id !== '') {
         if (!ctype_digit($id)) {
             gagal('ID tempat tidak valid.');
         }
-        $upd = mysqli_prepare($conn, 'UPDATE tempat SET nama = ?, kategori = ?, area = ?, harga_estimasi = ?, keterangan = ?, deskripsi = ?, alamat = ?, jam_buka = ?, status = ?, foto = ? WHERE id = ?');
-        mysqli_stmt_bind_param($upd, 'ssssssssssi', $nama, $kategori, $area, $harga_estimasi, $keterangan, $deskripsi, $alamat, $jam_buka, $status, $foto, $id);
+        $upd = mysqli_prepare($conn, 'UPDATE tempat SET nama = ?, kategori = ?, area = ?, harga_estimasi = ?, lat = ?, lng = ?, keterangan = ?, deskripsi = ?, alamat = ?, jam_buka = ?, status = ?, foto = ? WHERE id = ?');
+        mysqli_stmt_bind_param($upd, 'ssssssssssssi', $nama, $kategori, $area, $harga_estimasi, $lat, $lng, $keterangan, $deskripsi, $alamat, $jam_buka, $status, $foto, $id);
         mysqli_stmt_execute($upd);
         berhasil('Konten tempat berhasil diperbarui.');
     }
 
-    $ins = mysqli_prepare($conn, 'INSERT INTO tempat (nama, kategori, area, harga_estimasi, keterangan, deskripsi, alamat, jam_buka, status, foto) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
-    mysqli_stmt_bind_param($ins, 'ssssssssss', $nama, $kategori, $area, $harga_estimasi, $keterangan, $deskripsi, $alamat, $jam_buka, $status, $foto);
+    $ins = mysqli_prepare($conn, 'INSERT INTO tempat (nama, kategori, area, harga_estimasi, lat, lng, keterangan, deskripsi, alamat, jam_buka, status, foto) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
+    mysqli_stmt_bind_param($ins, 'ssssssssssss', $nama, $kategori, $area, $harga_estimasi, $lat, $lng, $keterangan, $deskripsi, $alamat, $jam_buka, $status, $foto);
     mysqli_stmt_execute($ins);
     berhasil('Konten tempat baru berhasil ditambahkan.');
 }

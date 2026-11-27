@@ -2,7 +2,7 @@ DROP DATABASE IF EXISTS db_wisata_halal_sg;
 CREATE DATABASE db_wisata_halal_sg;
 USE db_wisata_halal_sg;
 
--- 1. Tabel Users dengan pembeda role ('admin' dan 'user')
+-- 1. Tabel Users dengan pembeda role ('admin' dan 'user') serta kolom foto_profil (Bonus 1 & 4)
 CREATE TABLE users (
     id INT AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(50) NOT NULL UNIQUE,
@@ -10,6 +10,7 @@ CREATE TABLE users (
     password VARCHAR(255) NOT NULL,
     nama VARCHAR(100) NULL,
     asal_kota VARCHAR(100) NULL,
+    foto_profil VARCHAR(100) NULL,
     role ENUM('admin', 'user') NOT NULL DEFAULT 'user'
 );
 
@@ -17,13 +18,15 @@ CREATE TABLE users (
 INSERT INTO users (username, email, password, nama, asal_kota, role) VALUES
 ('admin_halalsg', 'admin@halalsg.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'Administrator Halal SG', 'Singapura', 'admin');
 
--- 2. Tabel Konten Tempat (Dikelola oleh Admin, tampil di Homepage)
+-- 2. Tabel Konten Tempat (dilengkapi kolom koordinat lat & lng untuk Geolocation / Haversine - Bonus 2)
 CREATE TABLE tempat (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nama VARCHAR(100) NOT NULL,
     kategori ENUM('wisata', 'kuliner', 'masjid') NOT NULL,
     area VARCHAR(100) NOT NULL,
     harga_estimasi VARCHAR(50) NOT NULL DEFAULT 'Gratis',
+    lat DECIMAL(10, 7) NULL,
+    lng DECIMAL(10, 7) NULL,
     keterangan VARCHAR(150) NOT NULL,
     deskripsi TEXT NOT NULL,
     alamat VARCHAR(200) NOT NULL,
@@ -32,17 +35,17 @@ CREATE TABLE tempat (
     foto VARCHAR(100) NOT NULL DEFAULT 'bg-singapore.jpg'
 );
 
--- Data awal katalog (Destinasi Wisata, Kuliner Halal, dan Masjid)
-INSERT INTO tempat (nama, kategori, area, harga_estimasi, keterangan, deskripsi, alamat, jam_buka, status, foto) VALUES
-('Zam Zam Restaurant', 'kuliner', 'Kampong Glam / Bugis', 'SGD 8 - 18', 'Murtabak Rusa & Nasi Briyani', 'Restoran legendaris di kawasan Kampong Glam yang berdiri sejak 1908 dan terkenal dengan hidangan Murtabak, Nasi Briyani, serta Teh Tarik khas India-Muslim.', '697-699 North Bridge Rd, Singapore 198675', 'Setiap hari, 07.00 - 23.00 SGT', 'Sertifikat Halal MUIS', 'zam-zam.jpg'),
-('Hajah Maimunah', 'kuliner', 'Kampong Glam / Jalan Pisang', 'SGD 10 - 20', 'Nasi Padang & Tahu Telur', 'Rumah makan Nasi Padang dan masakan Melayu tradisional peraih penghargaan Michelin Bib Gourmand dengan puluhan pilihan lauk autentik.', '11 & 15 Jalan Pisang, Singapore 199078', 'Senin - Sabtu, 07.00 - 20.00 SGT', 'Sertifikat Halal MUIS', 'hajah-maimunah.jpg'),
-('Encik Tan', 'kuliner', 'Orchard / Bugis', 'SGD 5 - 10', 'Laksa & Hainanese Chicken Rice', 'Jaringan kuliner lokal Singapura yang menyajikan hidangan klasik Tionghoa-Singapura versi bersertifikat halal MUIS.', '200 Victoria Street, #B1-K11 Bugis Junction', 'Setiap hari, 10.00 - 22.00 SGT', 'Sertifikat Halal MUIS', 'encik-tan.jpg'),
-('Masjid Sultan', 'masjid', 'Kampong Glam / Bugis', 'Gratis', 'Ruang sholat luas, tempat wudhu nyaman', 'Masjid ikonik berkubah emas sekaligus monumen nasional di jantung Kampong Glam dengan aula sholat utama berkapasitas besar.', '3 Muscat Street, Singapore 198833', 'Setiap hari, 05.00 - 22.00 SGT', 'Masjid', 'masjid-sultan.jpg'),
-('Masjid Al-Falah', 'masjid', 'Orchard Road', 'Gratis', 'Akses strategis di pusat belanja Orchard', 'Masjid modern yang terletak tepat di kawasan perbelanjaan Orchard Road (Bideford Road) untuk kemudahan sholat wisatawan.', '22 Bideford Road, #01-01 Cairnhill Place', 'Setiap hari, 05.30 - 21.30 SGT', 'Masjid', 'masjid-alfalah.jpg'),
-('Masjid Jamae (Chulia)', 'masjid', 'Chinatown', 'Gratis', 'Masjid bersejarah di tengah Chinatown', 'Salah satu masjid tertua di Singapura (dibangun tahun 1826) dengan arsitektur eklektik unik di tengah kawasan Chinatown.', '218 South Bridge Road, Singapore 058767', 'Setiap hari, 05.30 - 21.30 SGT', 'Masjid', 'masjid-jamae.jpg'),
-('Merlion Park & Marina Bay', 'wisata', 'Marina Bay', 'Gratis', 'Ikon utama wisata Singapura ramah Muslim', 'Kawasan ikonik tepi teluk dengan patung Merlion dan panorama Marina Bay Sands yang ramah wisatawan Muslim.', '1 Fullerton Rd, Singapore 049213', '24 Jam', 'Destinasi Wisata', 'bg-singapore.jpg');
+-- Data awal katalog lengkap dengan koordinat geografis Singapura
+INSERT INTO tempat (nama, kategori, area, harga_estimasi, lat, lng, keterangan, deskripsi, alamat, jam_buka, status, foto) VALUES
+('Zam Zam Restaurant', 'kuliner', 'Kampong Glam / Bugis', 'SGD 8 - 18', 1.3025000, 103.8588000, 'Murtabak Rusa & Nasi Briyani', 'Restoran legendaris di kawasan Kampong Glam yang berdiri sejak 1908 dan terkenal dengan hidangan Murtabak, Nasi Briyani, serta Teh Tarik khas India-Muslim.', '697-699 North Bridge Rd, Singapore 198675', 'Setiap hari, 07.00 - 23.00 SGT', 'Sertifikat Halal MUIS', 'zam-zam.jpg'),
+('Hajah Maimunah', 'kuliner', 'Kampong Glam / Jalan Pisang', 'SGD 10 - 20', 1.3029000, 103.8576000, 'Nasi Padang & Tahu Telur', 'Rumah makan Nasi Padang dan masakan Melayu tradisional peraih penghargaan Michelin Bib Gourmand dengan puluhan pilihan lauk autentik.', '11 & 15 Jalan Pisang, Singapore 199078', 'Senin - Sabtu, 07.00 - 20.00 SGT', 'Sertifikat Halal MUIS', 'hajah-maimunah.jpg'),
+('Encik Tan', 'kuliner', 'Orchard / Bugis', 'SGD 5 - 10', 1.2994000, 103.8554000, 'Laksa & Hainanese Chicken Rice', 'Jaringan kuliner lokal Singapura yang menyajikan hidangan klasik Tionghoa-Singapura versi bersertifikat halal MUIS.', '200 Victoria Street, #B1-K11 Bugis Junction', 'Setiap hari, 10.00 - 22.00 SGT', 'Sertifikat Halal MUIS', 'encik-tan.jpg'),
+('Masjid Sultan', 'masjid', 'Kampong Glam / Bugis', 'Gratis', 1.3023000, 103.8589000, 'Ruang sholat luas, tempat wudhu nyaman', 'Masjid ikonik berkubah emas sekaligus monumen nasional di jantung Kampong Glam dengan aula sholat utama berkapasitas besar.', '3 Muscat Street, Singapore 198833', 'Setiap hari, 05.00 - 22.00 SGT', 'Masjid', 'masjid-sultan.jpg'),
+('Masjid Al-Falah', 'masjid', 'Orchard Road', 'Gratis', 1.3037000, 103.8358000, 'Akses strategis di pusat belanja Orchard', 'Masjid modern yang terletak tepat di kawasan perbelanjaan Orchard Road (Bideford Road) untuk kemudahan sholat wisatawan.', '22 Bideford Road, #01-01 Cairnhill Place', 'Setiap hari, 05.30 - 21.30 SGT', 'Masjid', 'masjid-alfalah.jpg'),
+('Masjid Jamae (Chulia)', 'masjid', 'Chinatown', 'Gratis', 1.2834000, 103.8453000, 'Masjid bersejarah di tengah Chinatown', 'Salah satu masjid tertua di Singapura (dibangun tahun 1826) dengan arsitektur eklektik unik di tengah kawasan Chinatown.', '218 South Bridge Road, Singapore 058767', 'Setiap hari, 05.30 - 21.30 SGT', 'Masjid', 'masjid-jamae.jpg'),
+('Merlion Park & Marina Bay', 'wisata', 'Marina Bay', 'Gratis', 1.2868000, 103.8545000, 'Ikon utama wisata Singapura ramah Muslim', 'Kawasan ikonik tepi teluk dengan patung Merlion dan panorama Marina Bay Sands yang ramah wisatawan Muslim.', '1 Fullerton Rd, Singapore 049213', '24 Jam', 'Destinasi Wisata', 'bg-singapore.jpg');
 
--- 3. CRUD Itinerary Kuliner (Pribadi milik User - tanpa kolom MRT)
+-- 3. CRUD Itinerary Kuliner (Pribadi milik User)
 CREATE TABLE rencana_makanan (
     id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,

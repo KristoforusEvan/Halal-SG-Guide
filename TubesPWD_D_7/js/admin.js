@@ -1,5 +1,5 @@
 // ============================================================
-// admin.js - Dashboard Administrator (CRUD Konten & Hapus Akun)
+// admin.js - Dashboard Administrator (CRUD Konten + Koordinat & Hapus Akun)
 // ============================================================
 
 var daftarKonten = [];
@@ -69,6 +69,8 @@ function mulaiEditKonten(row) {
     document.getElementById('kategori').value = row.kategori;
     document.getElementById('area').value = row.area;
     document.getElementById('harga_estimasi').value = row.harga_estimasi;
+    document.getElementById('lat').value = row.lat || '';
+    document.getElementById('lng').value = row.lng || '';
     document.getElementById('status').value = row.status;
     document.getElementById('jam_buka').value = row.jam_buka;
     document.getElementById('alamat').value = row.alamat;
@@ -175,6 +177,12 @@ document.addEventListener('DOMContentLoaded', async function () {
     document.getElementById('formKonten').addEventListener('submit', async function (e) {
         e.preventDefault();
 
+        var daftarError = fn_ValKonten();
+        if (daftarError.length > 0) {
+            tampilPesan(daftarError, 'error');
+            return;
+        }
+
         var hasil = await panggilApi('api/tempat.php', {
             aksi: 'simpan',
             id: document.getElementById('id_konten').value,
@@ -182,6 +190,8 @@ document.addEventListener('DOMContentLoaded', async function () {
             kategori: document.getElementById('kategori').value,
             area: document.getElementById('area').value.trim(),
             harga_estimasi: document.getElementById('harga_estimasi').value.trim(),
+            lat: document.getElementById('lat').value.trim(),
+            lng: document.getElementById('lng').value.trim(),
             status: document.getElementById('status').value.trim(),
             jam_buka: document.getElementById('jam_buka').value.trim(),
             alamat: document.getElementById('alamat').value.trim(),

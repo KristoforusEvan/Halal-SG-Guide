@@ -1,5 +1,5 @@
 // ============================================================
-// login.js - halaman login (email + password)
+// login.js - halaman login (email + password) + smart redirect ke detail
 // ============================================================
 
 document.addEventListener('DOMContentLoaded', async function () {
@@ -22,6 +22,14 @@ document.addEventListener('DOMContentLoaded', async function () {
         if (hasil.sukses) {
             if (hasil.role === 'admin') {
                 window.location.href = 'admin.xhtml';
+                return;
+            }
+
+            // Jika user tadi mengklik kartu detail sebelum login, arahkan kembali ke detail tempat tersebut
+            var params = new URLSearchParams(window.location.search);
+            var redirect = params.get('redirect');
+            if (redirect && /^detail\.xhtml\?id=[0-9]+$/.test(redirect)) {
+                window.location.href = redirect;
             } else {
                 window.location.href = 'index.xhtml';
             }

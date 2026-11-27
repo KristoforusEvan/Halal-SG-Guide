@@ -6,8 +6,13 @@ async function panggilApi(url, data) {
     var opsi = { credentials: 'same-origin' };
     if (data !== undefined) {
         opsi.method = 'POST';
-        opsi.headers = { 'Content-Type': 'application/x-www-form-urlencoded' };
-        opsi.body = new URLSearchParams(data).toString();
+        // Jika data berupa FormData (misal unggah foto profil), biarkan browser mengatur boundary multipart
+        if (typeof FormData !== 'undefined' && data instanceof FormData) {
+            opsi.body = data;
+        } else {
+            opsi.headers = { 'Content-Type': 'application/x-www-form-urlencoded' };
+            opsi.body = new URLSearchParams(data).toString();
+        }
     }
 
     var respons;

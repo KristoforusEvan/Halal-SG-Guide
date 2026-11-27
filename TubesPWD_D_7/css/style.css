@@ -585,3 +585,65 @@ tr:hover td {
 .detail-aksi .btn-batal {
     margin-left: 0;
 }
+
+
+/* ===== GEOLOCATION BAR, STATUS KETERSEDIAAN & FOTO PROFIL ===== */
+.lokasi-bar {
+    margin-top: 18px;
+    padding-top: 16px;
+    border-top: 1px dashed #cbe0d5;
+}
+
+.lokasi-kontrol {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.lokasi-kontrol select {
+    padding: 9px 12px;
+    background-color: #ffffff;
+    border: 1px solid #cbe0d5;
+    border-left: 4px solid #d4af37;
+    border-radius: 5px;
+    font-family: inherit;
+    font-size: 13px;
+    color: #1f2d27;
+}
+
+.kartu-jarak {
+    color: #0b5e42;
+    font-size: 12px !important;
+    font-weight: 700;
+    margin-bottom: 6px !important;
+}
+
+.status-tersedia {
+    color: #0b5e42;
+    font-weight: 600;
+}
+
+.status-terpakai {
+    color: #c53030;
+    font-weight: 600;
+}
+
+.profil-foto-box {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    padding-bottom: 18px;
+    margin-bottom: 18px;
+    border-bottom: 1px solid #d5e5dc;
+    flex-wrap: wrap;
+}
+
+.profil-foto-preview {
+    width: 88px;
+    height: 88px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid #0b5e42;
+    background-color: #e6f2ec;
+}
