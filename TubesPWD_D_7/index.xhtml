@@ -5,45 +5,69 @@
 <head>
     <meta http-equiv="Content-Type" content="application/xhtml+xml; charset=UTF-8" />
     <title>Halal SG Guide - Panduan Wisata Halal Singapura</title>
-    <link rel="stylesheet" type="text/css" href="css/style.css?v=7" />
-    <script type="text/javascript" src="js/umum.js?v=7"></script>
-    <script type="text/javascript" src="js/validasi.js?v=7"></script>
-    <script type="text/javascript" src="js/index.js?v=7"></script>
+    <link rel="stylesheet" type="text/css" href="css/style.css?v=10" />
+    <script type="text/javascript" src="js/umum.js?v=10"></script>
+    <script type="text/javascript" src="js/validasi.js?v=10"></script>
+    <script type="text/javascript" src="js/index.js?v=10"></script>
 </head>
 <body>
     <div id="header">
         <h1>Halal SG Guide</h1>
-        <p>Cari kuliner halal dan masjid terdekat selama liburan di Singapura</p>
+        <p>Cari destinasi wisata, kuliner halal, dan masjid terdekat selama liburan di Singapura</p>
     </div>
 
-    <!-- Navbar diisi oleh JavaScript (umum.js) sesuai status login -->
+    <!-- Navbar Sticky diisi oleh JavaScript (umum.js) sesuai status login -->
     <div id="nav"></div>
 
     <div class="container">
-        <!-- Sapaan hanya diisi kalau sudah login -->
+        <!-- Sapaan muncul kalau sudah login -->
         <p id="sapaan"></p>
 
-        <!-- Form pencarian (dikirim lewat fetch oleh index.js, halaman tidak reload) -->
+        <!-- Form pencarian, filter kategori/harga, dan deteksi jarak Geolocation -->
         <div class="card-form">
             <form id="formCari" action="index.xhtml" method="get">
                 <div class="form-group">
-                    <label for="q">Cari nama tempat / stasiun MRT</label>
+                    <label for="q">Cari nama tempat atau area Singapura</label>
                     <input type="text" id="q" name="q" />
                 </div>
                 <div class="form-group">
                     <label for="kategori">Kategori</label>
                     <select id="kategori" name="kategori">
-                        <option value="">Semua</option>
+                        <option value="">Semua Kategori</option>
+                        <option value="wisata">Destinasi Wisata</option>
                         <option value="kuliner">Kuliner Halal</option>
-                        <option value="masjid">Masjid</option>
-                        <option value="wisata">Wisata</option>
+                        <option value="masjid">Ibadah / Masjid</option>
                     </select>
                 </div>
-                <div><input type="submit" class="btn" value="Cari" /></div>
+                <div class="form-group">
+                    <label for="harga">Filter Estimasi Biaya</label>
+                    <select id="harga" name="harga">
+                        <option value="">Semua Biaya</option>
+                        <option value="gratis">Gratis</option>
+                        <option value="berbayar">Berbayar (SGD)</option>
+                    </select>
+                </div>
+                <div><input type="submit" class="btn" value="Cari Tempat" /></div>
             </form>
+
+            <div class="lokasi-bar">
+                <div class="lokasi-kontrol">
+                    <button type="button" id="btnLokasiGps" class="btn">Gunakan Lokasi GPS Saya</button>
+                    <select id="lokasiManual" name="lokasiManual">
+                        <option value="">-- Atau Pilih Titik Area MRT Singapura --</option>
+                        <option value="bugis">Bugis MRT (EW12 / DT14)</option>
+                        <option value="orchard">Orchard MRT (NS22)</option>
+                        <option value="chinatown">Chinatown MRT (NE4 / DT19)</option>
+                        <option value="marinabay">Marina Bay MRT (NS27 / CE2)</option>
+                        <option value="changi">Changi Airport MRT (CG2)</option>
+                        <option value="harbourfront">HarbourFront / Sentosa (NE1 / CC29)</option>
+                    </select>
+                </div>
+                <p id="infoLokasi" class="form-hint">Urutan default katalog (belum memilih titik lokasi).</p>
+            </div>
         </div>
 
-        <h2>Hasil (<span id="jumlah">0</span> tempat)</h2>
+        <h2>Hasil Pencarian (<span id="jumlah">0</span> tempat)</h2>
 
         <div id="pesan"></div>
 

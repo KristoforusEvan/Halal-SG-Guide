@@ -8,7 +8,6 @@ function gambarDetail(t) {
 
     var kartu = buatElemen('div', '', 'detail-card');
 
-    // Banner gambar utama
     var banner = buatElemen('div', '', 'detail-banner kat-' + t.kategori);
     if (t.foto) {
         var img = document.createElement('img');
@@ -18,17 +17,21 @@ function gambarDetail(t) {
     }
     kartu.appendChild(banner);
 
-    // Bagian informasi lengkap
     var badan = buatElemen('div', '', 'detail-body');
     badan.appendChild(buatElemen('span', t.status, 'badge-halal'));
     badan.appendChild(buatElemen('h2', t.nama, 'detail-judul'));
 
     var meta = buatElemen('div', '', 'detail-meta');
 
-    var pMrt = document.createElement('p');
-    pMrt.appendChild(buatElemen('strong', 'Stasiun MRT / Area: '));
-    pMrt.appendChild(document.createTextNode(t.area_mrt));
-    meta.appendChild(pMrt);
+    var pArea = document.createElement('p');
+    pArea.appendChild(buatElemen('strong', 'Area / Kawasan: '));
+    pArea.appendChild(document.createTextNode(t.area));
+    meta.appendChild(pArea);
+
+    var pHarga = document.createElement('p');
+    pHarga.appendChild(buatElemen('strong', 'Estimasi Biaya: '));
+    pHarga.appendChild(document.createTextNode(t.harga_estimasi));
+    meta.appendChild(pHarga);
 
     if (t.alamat) {
         var pAlamat = document.createElement('p');
@@ -52,7 +55,6 @@ function gambarDetail(t) {
     kartu.appendChild(badan);
     wadah.appendChild(kartu);
 
-    // Sesuaikan tombol pintasan ke fitur CRUD sesuai kategori
     var tombolCatat = document.getElementById('tombolCatat');
     if (t.kategori === 'kuliner') {
         tombolCatat.setAttribute('href', 'makanan.xhtml');
@@ -66,7 +68,6 @@ function gambarDetail(t) {
 }
 
 document.addEventListener('DOMContentLoaded', async function () {
-    // Jika belum login, otomatis dialihkan ke login.xhtml
     var sesi = await siapkanHalaman('privat');
     if (!sesi) {
         return;

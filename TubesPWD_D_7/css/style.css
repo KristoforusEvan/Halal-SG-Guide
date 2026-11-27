@@ -36,7 +36,7 @@ body {
 .auth-left {
     width: 50%;
     background: linear-gradient(160deg, rgba(11, 94, 66, 0.86) 0%, rgba(6, 59, 41, 0.92) 100%),
-                url('../img/bg-singapore.jpg') center/cover no-repeat;
+        url('../img/bg-singapore.jpg') center/cover no-repeat;
     color: #ffffff;
     padding: 40px 35px;
     display: flex;
@@ -208,10 +208,10 @@ body {
     text-decoration: underline;
 }
 
-/* ================= HALAMAN UTAMA / DASHBOARD (SETELAH LOGIN) ================= */
+/* ================= HALAMAN UTAMA / DASHBOARD ================= */
 #header {
     background: linear-gradient(135deg, rgba(11, 94, 66, 0.92) 0%, rgba(6, 59, 41, 0.95) 100%),
-                url('../img/bg-singapore.jpg') center/cover no-repeat;
+        url('../img/bg-singapore.jpg') center/cover no-repeat;
     color: #ffffff;
     padding: 32px 20px;
     text-align: center;
@@ -230,15 +230,16 @@ body {
     color: #f9e28c;
 }
 
+/* NAVBAR STICKY: Tetap di atas dan tidak tenggelam saat di-scroll */
 #nav {
     position: sticky;
     top: 0;
     z-index: 1000;
-    background-color: #ffffff;
+    background-color: rgba(255, 255, 255, 0.98);
     padding: 14px 20px;
     text-align: center;
-    box-shadow: 0 3px 10px rgba(11, 94, 66, 0.08);
-    border-bottom: 1px solid #e1ece6;
+    box-shadow: 0 4px 14px rgba(11, 94, 66, 0.12);
+    border-bottom: 1px solid #d5e5dc;
 }
 
 #nav a {
@@ -250,6 +251,7 @@ body {
     font-size: 13px;
     font-weight: 600;
     display: inline-block;
+    transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 #nav a:hover {
@@ -365,6 +367,7 @@ tr:hover td {
     border-radius: 12px;
     font-size: 12px;
     font-weight: 600;
+    display: inline-block;
 }
 
 .aksi-link {
@@ -399,11 +402,10 @@ tr:hover td {
     font-weight: 600;
 }
 
-/* ===== HOMEPAGE: KARTU TEMPAT (ditambah oleh backend) ===== */ 
-
+/* ===== HOMEPAGE: KARTU TEMPAT ===== */
 .grid-tempat {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
     gap: 16px;
     margin-top: 16px;
 }
@@ -413,71 +415,6 @@ tr:hover td {
     border: 1px solid #d5e5dc;
     border-radius: 12px;
     overflow: hidden;
-}
-
-.kartu-gambar {
-    height: 90px;
-    background-color: #d8ecdf;
-}
-
-/* Ganti warna latar sesuai kategori; nanti bisa diganti foto lewat background-image */
-.kartu-gambar.kat-masjid { background-color: #f6ecc8; }
-.kartu-gambar.kat-wisata { background-color: #dbe7f5; }
-
-.kartu-isi { padding: 12px 14px 14px; }
-.kartu-isi h3 { margin: 8px 0 2px 0; font-size: 15px; color: #1f2d27; }
-.kartu-mrt { color: #5c6e66; font-size: 12px; margin: 0 0 6px 0; }
-.kartu-isi p { font-size: 13px; margin: 0; }
-
-
-/* ===== TAMBAHAN UNTUK VERSI XHTML + API (ditambah oleh backend) ===== */
-
-/* Sembunyikan elemen (dipakai JS lewat classList) */
-.sembunyi { display: none; }
-
-/* Tombol Edit / Hapus di tabel: tombol yang tampil seperti link */
-.tombol-teks {
-    background: none;
-    border: none;
-    padding: 0;
-    font-family: inherit;
-    font-size: 13px;
-    cursor: pointer;
-}
-.tombol-teks:hover { text-decoration: underline; }
-
-/* Tombol "Batal Edit" (abu-abu) */
-.btn.btn-batal {
-    margin-left: 8px;
-    background: #6b7c74;
-    box-shadow: none;
-}
-.btn.btn-batal:hover { background: #55655e; }
-
-/* Teks bantuan kecil di bawah input */
-.form-hint {
-    font-size: 12px;
-    color: #6b7c74;
-    margin: 4px 0 0 0;
-}
-
-/* Foto di kartu tempat (kotak gambar diperbesar dari 90px) */
-.kartu-gambar { height: 130px; }
-.kartu-gambar img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-}
-
-/* Jarak pesan error/sukses dari JavaScript */
-#pesan p { margin: 0 0 14px 0; }
-
-
-
-
-/* ===== KARTU KLIKABLE & HALAMAN DETAIL TEMPAT ===== */
-.kartu-tempat {
     cursor: pointer;
     transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
     display: flex;
@@ -490,15 +427,55 @@ tr:hover td {
     border-color: #0b5e42;
 }
 
+.kartu-gambar {
+    height: 140px;
+    background-color: #d8ecdf;
+}
+
+.kartu-gambar.kat-masjid {
+    background-color: #f6ecc8;
+}
+
+.kartu-gambar.kat-wisata {
+    background-color: #dbe7f5;
+}
+
+.kartu-gambar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
 .kartu-isi {
+    padding: 14px 16px 16px;
     flex: 1;
     display: flex;
     flex-direction: column;
 }
 
+.kartu-isi h3 {
+    margin: 8px 0 4px 0;
+    font-size: 16px;
+    color: #1f2d27;
+}
+
+.kartu-area {
+    color: #5c6e66;
+    font-size: 12px;
+    margin: 0 0 6px 0;
+    font-weight: 600;
+}
+
+.kartu-isi p {
+    font-size: 13px;
+    margin: 0;
+    line-height: 1.5;
+}
+
 .kartu-cta {
     margin-top: auto !important;
-    padding-top: 10px;
+    padding-top: 12px;
     font-size: 12px !important;
     font-weight: 700;
     color: #0b5e42;
@@ -508,7 +485,45 @@ tr:hover td {
     color: #b88e14;
 }
 
-/* Tampilan Halaman Detail */
+/* ===== TAMBAHAN UTILITAS ===== */
+.sembunyi {
+    display: none;
+}
+
+.tombol-teks {
+    background: none;
+    border: none;
+    padding: 0;
+    font-family: inherit;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+.tombol-teks:hover {
+    text-decoration: underline;
+}
+
+.btn.btn-batal {
+    margin-left: 8px;
+    background: #6b7c74;
+    box-shadow: none;
+}
+
+.btn.btn-batal:hover {
+    background: #55655e;
+}
+
+.form-hint {
+    font-size: 12px;
+    color: #6b7c74;
+    margin: 4px 0 0 0;
+}
+
+#pesan p {
+    margin: 0 0 14px 0;
+}
+
+/* ===== HALAMAN DETAIL TEMPAT ===== */
 .detail-card {
     border: 1px solid #d5e5dc;
     border-radius: 12px;
@@ -569,4 +584,86 @@ tr:hover td {
 
 .detail-aksi .btn-batal {
     margin-left: 0;
+}
+
+
+/* ===== GEOLOCATION BAR, STATUS KETERSEDIAAN & FOTO PROFIL ===== */
+.lokasi-bar {
+    margin-top: 18px;
+    padding-top: 16px;
+    border-top: 1px dashed #cbe0d5;
+}
+
+.lokasi-kontrol {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.lokasi-kontrol select {
+    padding: 9px 12px;
+    background-color: #ffffff;
+    border: 1px solid #cbe0d5;
+    border-left: 4px solid #d4af37;
+    border-radius: 5px;
+    font-family: inherit;
+    font-size: 13px;
+    color: #1f2d27;
+}
+
+.kartu-jarak {
+    color: #0b5e42;
+    font-size: 12px !important;
+    font-weight: 700;
+    margin-bottom: 6px !important;
+}
+
+.status-tersedia {
+    color: #0b5e42;
+    font-weight: 600;
+}
+
+.status-terpakai {
+    color: #c53030;
+    font-weight: 600;
+}
+
+.profil-foto-box {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    padding-bottom: 18px;
+    margin-bottom: 18px;
+    border-bottom: 1px solid #d5e5dc;
+    flex-wrap: wrap;
+}
+
+.profil-foto-preview {
+    width: 88px;
+    height: 88px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid #0b5e42;
+    background-color: #e6f2ec;
+}
+
+
+/* ===== SCROLL PROGRESS BAR (INDIKATOR SCROLL ATAS) ===== */
+.scroll-progress-wrap {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: transparent;
+    z-index: 2000;
+    pointer-events: none;
+}
+
+.scroll-progress-bar {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #0b5e42 0%, #13855f 60%, #d4af37 100%);
+    transition: width 0.08s linear;
 }

@@ -5,15 +5,15 @@
 <head>
     <meta http-equiv="Content-Type" content="application/xhtml+xml; charset=UTF-8" />
     <title>Profil Pengguna - Halal SG Guide</title>
-    <link rel="stylesheet" type="text/css" href="css/style.css?v=7" />
-    <script type="text/javascript" src="js/umum.js?v=7"></script>
-    <script type="text/javascript" src="js/validasi.js?v=7"></script>
-    <script type="text/javascript" src="js/profil.js?v=7"></script>
+    <link rel="stylesheet" type="text/css" href="css/style.css?v=10" />
+    <script type="text/javascript" src="js/umum.js?v=10"></script>
+    <script type="text/javascript" src="js/validasi.js?v=10"></script>
+    <script type="text/javascript" src="js/profil.js?v=10"></script>
 </head>
 <body>
     <div id="header">
         <h1>Halal SG Guide - Profil Wisatawan</h1>
-        <p>Kelola informasi pribadi akun wisata halal Anda</p>
+        <p>Kelola informasi pribadi dan foto profil akun wisata halal Anda</p>
     </div>
 
     <!-- Navbar diisi oleh JavaScript (umum.js) -->
@@ -25,7 +25,16 @@
         <div id="pesan"></div>
 
         <div class="card-form">
-            <form id="formProfil" action="api/profil.php" method="post">
+            <form id="formProfil" action="api/profil.php" method="post" enctype="multipart/form-data">
+                <div class="profil-foto-box">
+                    <img id="previewFotoProfil" class="profil-foto-preview" src="img/bg-singapore.jpg" alt="Foto Profil Pengguna" />
+                    <div class="form-group" style="margin-bottom: 0; flex: 1;">
+                        <label for="foto_profil">Foto Profil (JPG, PNG, atau WEBP - Maksimal 2 MB)</label>
+                        <input type="file" id="foto_profil" name="foto_profil" accept="image/jpeg,image/png,image/webp" />
+                        <p class="form-hint">Biarkan kosong jika tidak ingin mengganti foto profil saat ini.</p>
+                    </div>
+                </div>
+
                 <div class="form-group">
                     <label for="username">Username</label>
                     <input type="text" id="username" name="username" />

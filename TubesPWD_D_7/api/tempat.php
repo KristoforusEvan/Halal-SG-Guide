@@ -1,49 +1,180 @@
 <?php
-// tempat.php (GET)
-//  - Tanpa ?id : daftar tempat untuk homepage (PUBLIK, tidak perlu login).
-//  - Dengan ?id : detail satu tempat (PRIVAT, wajib login).
+// tempat.php
+//   GET tanpa ?id      -> Daftar & filter tempat untuk Homepage (PUBLIK, menyertakan lat & lng)
+//   GET dengan ?id=... -> Detail 1 tempat (PRIVAT, wajib login)
+//   POST aksi=simpan   -> Tambah / Edit konten tempat (Khusus Admin)
+//   POST aksi=hapus    -> Hapus konten tempat (Khusus Admin)
 require 'fungsi.php';
-require 'data_tempat.php'; // berisi array $daftarTempat
+require 'koneksi.php';
 
-// ---------- MODE DETAIL (WAJIB LOGIN) ----------
-if (isset($_GET['id'])) {
-    wajibLogin(); // balas 401 jika belum login
+$daftarKategori = array('wisata', 'kuliner', 'masjid');
 
-    $id = is_string($_GET['id']) ? trim($_GET['id']) : '';
+// ---------- GET: READ DETAIL ATAU DAFTAR TEMPAT ----------
+if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+
+    // Mode Detail 1 Tempat (WAJIB LOGIN)
+    if (isset($_GET['id'])) {
+        wajibLogin();
+
+        $id = is_string($_GET['id']) ? trim($_GET['id']) : '';
+        if (!ctype_digit($id)) {
+            gagal('ID tempat tidak valid.');
+        }
+
+        $stmt = mysqli_prepare($conn, 'SELECT id, nama, kategori, area, harga_estimasi, lat, lng, keterangan, deskripsi, alamat, jam_buka, status, foto FROM tempat WHERE id = ?');
+        mysqli_stmt_bind_param($stmt, 'i', $id);
+        mysqli_stmt_execute($stmt);
+        $row = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt));
+
+        if (!$row) {
+            gagal('Tempat tidak ditemukan.', 404);
+        }
+        $row['foto'] = basename($row['foto']);
+        berhasil('', array('data' => $row));
+    }
+
+    // Mode Daftar & Filter Homepage (PUBLIK)
+    $keyword  = (isset($_GET['q']) && is_string($_GET['q'])) ? trim($_GET['q']) : '';
+    $kategori = (isset($_GET['kategori']) && is_string($_GET['kategori'])) ? trim($_GET['kategori']) : '';
+    $harga    = (isset($_GET['harga']) && is_string($_GET['harga'])) ? trim($_GET['harga']) : '';
+
+    $sql    = 'SELECT id, nama, kategori, area, harga_estimasi, lat, lng, keterangan, deskripsi, alamat, jam_buka, status, foto FROM tempat WHERE 1=1';
+    $types  = '';
+    $params = array();
+
+    if ($kategori !== '' && in_array($kategori, $daftarKategori, true)) {
+        $sql .= ' AND kategori = ?';
+        $types .= 's';
+        $params[] = $kategori;
+    }
+
+    if ($keyword !== '') {
+        $sql .= ' AND (nama LIKE ? OR area LIKE ? OR alamat LIKE ?)';
+        $like = '%' . $keyword . '%';
+        $types .= 'sss';
+        $params[] = $like;
+        $params[] = $like;
+        $params[] = $like;
+    }
+
+    if ($harga === 'gratis') {
+        $sql .= ' AND harga_estimasi = ?';
+        $types .= 's';
+        $params[] = 'Gratis';
+    } elseif ($harga === 'berbayar') {
+        $sql .= ' AND harga_estimasi <> ?';
+        $types .= 's';
+        $params[] = 'Gratis';
+    }
+
+    $sql .= ' ORDER BY id DESC';
+
+    $stmt = mysqli_prepare($conn, $sql);
+    if ($types !== '') {
+        mysqli_stmt_bind_param($stmt, $types, ...$params);
+    }
+    mysqli_stmt_execute($stmt);
+    $res = mysqli_stmt_get_result($stmt);
+
+    $hasil = array();
+    while ($row = mysqli_fetch_assoc($res)) {
+        $row['foto'] = basename($row['foto']);
+        $hasil[] = $row;
+    }
+
+    berhasil('', array('jumlah' => count($hasil), 'data' => $hasil));
+}
+
+// ---------- POST: KHUSUS ADMIN (CREATE / UPDATE / DELETE KONTEN) ----------
+wajibPost();
+wajibAdmin();
+
+$aksi = ambilPost('aksi');
+
+if ($aksi === 'hapus') {
+    $id = ambilPost('id');
     if (!ctype_digit($id)) {
         gagal('ID tempat tidak valid.');
     }
 
-    $targetId = (int) $id;
-    foreach ($daftarTempat as $t) {
-        if (isset($t['id']) && (int) $t['id'] === $targetId) {
-            $t['foto'] = isset($t['foto']) ? basename($t['foto']) : '';
-            berhasil('', array('data' => $t));
+    $stmt = mysqli_prepare($conn, 'DELETE FROM tempat WHERE id = ?');
+    mysqli_stmt_bind_param($stmt, 'i', $id);
+    mysqli_stmt_execute($stmt);
+
+    if (mysqli_stmt_affected_rows($stmt) !== 1) {
+        gagal('Konten tempat tidak ditemukan.', 404);
+    }
+    berhasil('Konten tempat berhasil dihapus.');
+}
+
+if ($aksi === 'simpan') {
+    $id             = ambilPost('id');
+    $nama           = ambilPost('nama');
+    $kategori       = ambilPost('kategori');
+    $area           = ambilPost('area');
+    $harga_estimasi = ambilPost('harga_estimasi');
+    $latInput       = ambilPost('lat');
+    $lngInput       = ambilPost('lng');
+    $keterangan     = ambilPost('keterangan');
+    $deskripsi      = ambilPost('deskripsi');
+    $alamat         = ambilPost('alamat');
+    $jam_buka       = ambilPost('jam_buka');
+    $status         = ambilPost('status');
+    $foto           = basename(ambilPost('foto'));
+
+    if ($foto === '') {
+        $foto = 'bg-singapore.jpg';
+    }
+    if ($harga_estimasi === '') {
+        $harga_estimasi = 'Gratis';
+    }
+
+    if ($nama === '' || $kategori === '' || $area === '' || $keterangan === '' || $deskripsi === '' || $alamat === '' || $jam_buka === '' || $status === '') {
+        gagal('Harap lengkapi semua kolom konten tempat.');
+    }
+    if (!in_array($kategori, $daftarKategori, true)) {
+        gagal('Kategori tempat tidak valid.');
+    }
+    if (strlen($nama) > 100 || strlen($area) > 100 || strlen($jam_buka) > 100) {
+        gagal('Nama, area, dan jam buka maksimal 100 karakter.');
+    }
+    if (strlen($keterangan) > 150) {
+        gagal('Ringkasan keterangan maksimal 150 karakter.');
+    }
+    if (strlen($alamat) > 200) {
+        gagal('Alamat lengkap maksimal 200 karakter.');
+    }
+
+    // Validasi koordinat opsional (boleh kosong, tapi jika diisi harus angka valid)
+    $lat = null;
+    $lng = null;
+    if ($latInput !== '' || $lngInput !== '') {
+        if (!is_numeric($latInput) || !is_numeric($lngInput)) {
+            gagal('Latitude dan Longitude harus berupa angka desimal (contoh: 1.3023).');
         }
+        $latFloat = (float) $latInput;
+        $lngFloat = (float) $lngInput;
+        if ($latFloat < -90 || $latFloat > 90 || $lngFloat < -180 || $lngFloat > 180) {
+            gagal('Nilai Latitude (-90 s.d. 90) atau Longitude (-180 s.d. 180) di luar jangkauan.');
+        }
+        $lat = (string) $latFloat;
+        $lng = (string) $lngFloat;
     }
-    gagal('Tempat tidak ditemukan.', 404);
+
+    if ($id !== '') {
+        if (!ctype_digit($id)) {
+            gagal('ID tempat tidak valid.');
+        }
+        $upd = mysqli_prepare($conn, 'UPDATE tempat SET nama = ?, kategori = ?, area = ?, harga_estimasi = ?, lat = ?, lng = ?, keterangan = ?, deskripsi = ?, alamat = ?, jam_buka = ?, status = ?, foto = ? WHERE id = ?');
+        mysqli_stmt_bind_param($upd, 'ssssssssssssi', $nama, $kategori, $area, $harga_estimasi, $lat, $lng, $keterangan, $deskripsi, $alamat, $jam_buka, $status, $foto, $id);
+        mysqli_stmt_execute($upd);
+        berhasil('Konten tempat berhasil diperbarui.');
+    }
+
+    $ins = mysqli_prepare($conn, 'INSERT INTO tempat (nama, kategori, area, harga_estimasi, lat, lng, keterangan, deskripsi, alamat, jam_buka, status, foto) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
+    mysqli_stmt_bind_param($ins, 'ssssssssssss', $nama, $kategori, $area, $harga_estimasi, $lat, $lng, $keterangan, $deskripsi, $alamat, $jam_buka, $status, $foto);
+    mysqli_stmt_execute($ins);
+    berhasil('Konten tempat baru berhasil ditambahkan.');
 }
 
-// ---------- MODE PENCARIAN HOMEPAGE (PUBLIK) ----------
-$keyword  = '';
-$kategori = '';
-if (isset($_GET['q']) && is_string($_GET['q'])) {
-    $keyword = trim($_GET['q']);
-}
-if (isset($_GET['kategori']) && is_string($_GET['kategori'])) {
-    $kategori = $_GET['kategori'];
-}
-
-$hasil = array();
-foreach ($daftarTempat as $t) {
-    if ($kategori !== '' && $t['kategori'] !== $kategori) {
-        continue;
-    }
-    if ($keyword !== '' && mb_stripos($t['nama'], $keyword) === false && mb_stripos($t['area_mrt'], $keyword) === false) {
-        continue;
-    }
-    $t['foto'] = isset($t['foto']) ? basename($t['foto']) : '';
-    $hasil[] = $t;
-}
-
-berhasil('', array('jumlah' => count($hasil), 'data' => $hasil));
+gagal('Aksi tidak dikenal.');
