@@ -2,7 +2,7 @@
 // tempat.php
 //   GET tanpa ?id      -> Daftar & filter tempat untuk Homepage (PUBLIK, menyertakan lat & lng)
 //   GET dengan ?id=... -> Detail 1 tempat (PRIVAT, wajib login)
-//   POST aksi=simpan   -> Tambah / Edit konten tempat (Khusus Admin)
+//   POST aksi=simpan   -> Tambah / Edit konten tempat + Upload Foto ke img/ (Khusus Admin)
 //   POST aksi=hapus    -> Hapus konten tempat (Khusus Admin)
 require 'fungsi.php';
 require 'koneksi.php';
@@ -120,11 +120,9 @@ if ($aksi === 'simpan') {
     $alamat         = ambilPost('alamat');
     $jam_buka       = ambilPost('jam_buka');
     $status         = ambilPost('status');
-    $foto           = basename(ambilPost('foto'));
+    $fotoLama       = basename(ambilPost('foto_lama'));
 
-    if ($foto === '') {
-        $foto = 'bg-singapore.jpg';
-    }
+    $foto = ($fotoLama !== '') ? $fotoLama : 'bg-singapore.jpg';
     if ($harga_estimasi === '') {
         $harga_estimasi = 'Gratis';
     }
@@ -145,7 +143,7 @@ if ($aksi === 'simpan') {
         gagal('Alamat lengkap maksimal 200 karakter.');
     }
 
-    // Validasi koordinat opsional (boleh kosong, tapi jika diisi harus angka valid)
+    // Validasi koordinat opsional
     $lat = null;
     $lng = null;
     if ($latInput !== '' || $lngInput !== '') {
@@ -159,6 +157,45 @@ if ($aksi === 'simpan') {
         }
         $lat = (string) $latFloat;
         $lng = (string) $lngFloat;
+    }
+
+    // Proses unggah foto baru jika admin memilih file di input foto_file
+    if (isset($_FILES['foto_file']) && $_FILES['foto_file']['error'] !== UPLOAD_ERR_NO_FILE) {
+        $file = $_FILES['foto_file'];
+
+        if ($file['error'] === UPLOAD_ERR_INI_SIZE || $file['error'] === UPLOAD_ERR_FORM_SIZE) {
+            gagal('Ukuran foto tempat maksimal 2 MB.');
+        }
+        if ($file['error'] !== UPLOAD_ERR_OK) {
+            gagal('Gagal mengunggah foto tempat. Kode error: ' . $file['error']);
+        }
+        if ($file['size'] > 2 * 1024 * 1024) {
+            gagal('Ukuran foto tempat maksimal 2 MB.');
+        }
+
+        $finfo = finfo_open(FILEINFO_MIME_TYPE);
+        $mime  = finfo_file($finfo, $file['tmp_name']);
+        finfo_close($finfo);
+
+        $ekstensiDiizinkan = array(
+            'image/jpeg' => 'jpg',
+            'image/png'  => 'png',
+            'image/webp' => 'webp'
+        );
+
+        if (!isset($ekstensiDiizinkan[$mime])) {
+            gagal('Format foto harus JPG, PNG, atau WEBP.');
+        }
+
+        $folderTujuan = dirname(__DIR__) . DIRECTORY_SEPARATOR . 'img';
+        $namaFileBaru = 'tempat_' . time() . '_' . mt_rand(100, 999) . '.' . $ekstensiDiizinkan[$mime];
+        $pathTujuan   = $folderTujuan . DIRECTORY_SEPARATOR . $namaFileBaru;
+
+        if (!move_uploaded_file($file['tmp_name'], $pathTujuan)) {
+            gagal('Gagal menyimpan file foto ke folder img/.', 500);
+        }
+
+        $foto = $namaFileBaru;
     }
 
     if ($id !== '') {

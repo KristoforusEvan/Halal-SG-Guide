@@ -39,8 +39,10 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label for="area">Area / Kawasan Singapura</label>
-                    <input type="text" id="area" name="area" />
+                    <label for="foto_file">Upload Foto Tempat (JPG, PNG, atau WEBP - Maksimal 2 MB)</label>
+                    <input type="hidden" id="foto_lama" name="foto_lama" value="" />
+                    <input type="file" id="foto_file" name="foto_file" accept="image/jpeg,image/png,image/webp" />
+                    <p id="infoFotoSaatIni" class="form-hint">Opsional: jika dikosongkan saat tambah baru, otomatis memakai bg-singapore.jpg.</p>
                 </div>
                 <div class="form-group">
                     <label for="harga_estimasi">Estimasi Biaya (contoh: Gratis atau SGD 8 - 15)</label>

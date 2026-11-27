@@ -1,5 +1,5 @@
 // ============================================================
-// admin.js - Dashboard Administrator (CRUD Konten + Koordinat & Hapus Akun)
+// admin.js - Dashboard Administrator (CRUD Konten + Upload Foto & Hapus Akun)
 // ============================================================
 
 var daftarKonten = [];
@@ -74,7 +74,9 @@ function mulaiEditKonten(row) {
     document.getElementById('status').value = row.status;
     document.getElementById('jam_buka').value = row.jam_buka;
     document.getElementById('alamat').value = row.alamat;
-    document.getElementById('foto').value = row.foto;
+    document.getElementById('foto_lama').value = row.foto || '';
+    document.getElementById('foto_file').value = '';
+    document.getElementById('infoFotoSaatIni').textContent = 'Foto aktif saat ini: ' + (row.foto || 'bg-singapore.jpg') + ' (biarkan kosong jika tidak ingin mengganti).';
     document.getElementById('keterangan').value = row.keterangan;
     document.getElementById('deskripsi').value = row.deskripsi;
 
@@ -88,6 +90,8 @@ function mulaiEditKonten(row) {
 function selesaiEditKonten() {
     document.getElementById('formKonten').reset();
     document.getElementById('id_konten').value = '';
+    document.getElementById('foto_lama').value = '';
+    document.getElementById('infoFotoSaatIni').textContent = 'Opsional: jika dikosongkan saat tambah baru, otomatis memakai bg-singapore.jpg.';
     document.getElementById('judulFormKonten').textContent = 'Tambah Konten Tempat (Homepage)';
     document.getElementById('tombolSimpanKonten').value = 'Simpan Konten';
     document.getElementById('tombolBatalKonten').classList.add('sembunyi');
@@ -183,22 +187,29 @@ document.addEventListener('DOMContentLoaded', async function () {
             return;
         }
 
-        var hasil = await panggilApi('api/tempat.php', {
-            aksi: 'simpan',
-            id: document.getElementById('id_konten').value,
-            nama: document.getElementById('nama').value.trim(),
-            kategori: document.getElementById('kategori').value,
-            area: document.getElementById('area').value.trim(),
-            harga_estimasi: document.getElementById('harga_estimasi').value.trim(),
-            lat: document.getElementById('lat').value.trim(),
-            lng: document.getElementById('lng').value.trim(),
-            status: document.getElementById('status').value.trim(),
-            jam_buka: document.getElementById('jam_buka').value.trim(),
-            alamat: document.getElementById('alamat').value.trim(),
-            foto: document.getElementById('foto').value,
-            keterangan: document.getElementById('keterangan').value.trim(),
-            deskripsi: document.getElementById('deskripsi').value.trim()
-        });
+        // Gunakan FormData agar data teks + file foto terkirim lewat multipart/form-data
+        var formData = new FormData();
+        formData.append('aksi', 'simpan');
+        formData.append('id', document.getElementById('id_konten').value);
+        formData.append('nama', document.getElementById('nama').value.trim());
+        formData.append('kategori', document.getElementById('kategori').value);
+        formData.append('area', document.getElementById('area').value.trim());
+        formData.append('harga_estimasi', document.getElementById('harga_estimasi').value.trim());
+        formData.append('lat', document.getElementById('lat').value.trim());
+        formData.append('lng', document.getElementById('lng').value.trim());
+        formData.append('status', document.getElementById('status').value.trim());
+        formData.append('jam_buka', document.getElementById('jam_buka').value.trim());
+        formData.append('alamat', document.getElementById('alamat').value.trim());
+        formData.append('foto_lama', document.getElementById('foto_lama').value);
+        formData.append('keterangan', document.getElementById('keterangan').value.trim());
+        formData.append('deskripsi', document.getElementById('deskripsi').value.trim());
+
+        var inputFoto = document.getElementById('foto_file');
+        if (inputFoto.files && inputFoto.files[0]) {
+            formData.append('foto_file', inputFoto.files[0]);
+        }
+
+        var hasil = await panggilApi('api/tempat.php', formData);
 
         if (sesiHabis(hasil)) {
             return;
