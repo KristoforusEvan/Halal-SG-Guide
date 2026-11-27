@@ -126,6 +126,9 @@ function bangunNavbar(sesi) {
         tambahLink(nav, 'Login', 'login.xhtml');
         tambahLink(nav, 'Daftar', 'register.xhtml');
     }
+
+    // 1. Panggil footer setelah navbar selesai dibuat
+    bangunFooter();
 }
 
 // aturan: 'privat' (user/admin), 'admin' (khusus admin), 'tamu' (belum login), 'bebas' (siapa saja)
@@ -157,7 +160,6 @@ async function siapkanHalaman(aturan) {
 // Scroll Progress Bar - indikator garis di paling atas layar
 // ============================================================
 function pasangScrollProgress() {
-    // Cegah duplikasi jika dipanggil lebih dari sekali
     if (document.getElementById('scrollProgressBar')) {
         return;
     }
@@ -183,4 +185,78 @@ function pasangScrollProgress() {
     window.addEventListener('scroll', perbaruiProgress, { passive: true });
     window.addEventListener('resize', perbaruiProgress, { passive: true });
     perbaruiProgress();
+}
+
+
+// ============================================================
+// Footer Minimalis Modern (3 Kolom + Copyright)
+// ============================================================
+function bangunFooter() {
+    if (document.getElementById('footerPortal')) {
+        return;
+    }
+
+    var footer = buatElemen('div', '', 'footer-modern');
+    footer.setAttribute('id', 'footerPortal');
+
+    var container = buatElemen('div', '', 'footer-container');
+
+    // --- Bagian 1: 3 Kolom Minimalis ---
+    var mainGrid = buatElemen('div', '', 'footer-columns');
+
+    // Kolom 1: Brand
+    var colBrand = buatElemen('div', '', 'footer-col-brand');
+    var brandTitle = buatElemen('div', '', 'footer-brand-row');
+    brandTitle.appendChild(buatElemen('span', '', 'footer-brand-dot'));
+    brandTitle.appendChild(buatElemen('strong', 'Halal SG Guide'));
+    colBrand.appendChild(brandTitle);
+    colBrand.appendChild(buatElemen('p', 'Platform panduan wisata ramah Muslim di Singapura. Temukan destinasi ikonik, kuliner bersertifikat halal MUIS, dan masjid terdekat dalam satu tempat.'));
+    mainGrid.appendChild(colBrand);
+
+    // Kolom 2: Navigasi
+    var colNav = buatElemen('div', '', 'footer-col-links');
+    colNav.appendChild(buatElemen('h4', 'Jelajahi'));
+    var ulNav = document.createElement('ul');
+    var menuNav = [
+        { teks: 'Beranda Katalog', href: 'index.xhtml' },
+        { teks: 'Rencana Kuliner', href: 'makanan.xhtml' },
+        { teks: 'Jadwal Masjid', href: 'masjid.xhtml' },
+        { teks: 'Profil Akun', href: 'profil.xhtml' }
+    ];
+    for (var j = 0; j < menuNav.length; j++) {
+        var li = document.createElement('li');
+        var a = buatElemen('a', menuNav[j].teks);
+        a.setAttribute('href', menuNav[j].href);
+        li.appendChild(a);
+        ulNav.appendChild(li);
+    }
+    colNav.appendChild(ulNav);
+    mainGrid.appendChild(colNav);
+
+    // Kolom 3: Kontak & Lokasi
+    var colInfo = buatElemen('div', '', 'footer-col-links');
+    colInfo.appendChild(buatElemen('h4', 'Informasi & Kontak'));
+    var ulInfo = document.createElement('ul');
+    var infoItems = [
+        'Kampong Glam, Singapore 198833',
+        'info@halalsg-guide.com',
+        'Instagram: @halalsg_guide',
+        'Panduan Sertifikasi Halal MUIS'
+    ];
+    for (var k = 0; k < infoItems.length; k++) {
+        ulInfo.appendChild(buatElemen('li', infoItems[k]));
+    }
+    colInfo.appendChild(ulInfo);
+    mainGrid.appendChild(colInfo);
+
+    container.appendChild(mainGrid);
+
+    // --- Bagian 2: Bottom Bar Copyright ---
+    var bottomBar = buatElemen('div', '', 'footer-bottom');
+    bottomBar.appendChild(buatElemen('span', '© 2026 Halal SG Guide. All rights reserved.'));
+    bottomBar.appendChild(buatElemen('span', 'Tugas Besar Pemrograman Web Dasar • Kelompok D-7'));
+    container.appendChild(bottomBar);
+
+    footer.appendChild(container);
+    document.body.appendChild(footer);
 }
