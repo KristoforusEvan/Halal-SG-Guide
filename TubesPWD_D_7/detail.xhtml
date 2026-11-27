@@ -5,29 +5,44 @@
 <head>
     <meta http-equiv="Content-Type" content="application/xhtml+xml; charset=UTF-8" />
     <title>Detail Tempat - Halal SG Guide</title>
-    <link rel="stylesheet" type="text/css" href="css/style.css?v=8" />
-    <script type="text/javascript" src="js/umum.js?v=8"></script>
-    <script type="text/javascript" src="js/validasi.js?v=8"></script>
-    <script type="text/javascript" src="js/detail.js?v=8"></script>
+    <link rel="stylesheet" type="text/css" href="css/style.css?v=15" />
+    <script type="text/javascript" src="js/umum.js?v=15"></script>
+    <script type="text/javascript" src="js/detail.js?v=15"></script>
 </head>
 <body>
     <div id="header">
-        <h1>Halal SG Guide - Detail Lokasi</h1>
-        <p>Informasi lengkap kuliner halal dan masjid pilihan di Singapura</p>
+        <h1>Halal SG Guide</h1>
+        <p>Informasi lengkap destinasi wisata, kuliner halal, dan masjid pilihan di Singapura</p>
     </div>
 
-    <!-- Navbar diisi oleh JavaScript (umum.js) -->
     <div id="nav"></div>
 
     <div class="container">
         <div id="pesan"></div>
 
-        <!-- Konten detail tempat digambar oleh detail.js -->
-        <div id="kontenDetail"></div>
+        <div id="kartuDetail" class="detail-card sembunyi">
+            <!-- Carousel / Slider Gambar dirender oleh detail.js -->
+            <div id="detailBanner" class="detail-banner"></div>
 
-        <div class="detail-aksi">
-            <a href="index.xhtml" class="btn btn-batal">&#8592; Kembali ke Homepage</a>
-            <a id="tombolCatat" href="makanan.xhtml" class="btn sembunyi">Catat ke Rencana Saya</a>
+            <div class="detail-body">
+                <span id="detailStatus" class="badge-halal"></span>
+                <h2 id="detailNama"></h2>
+
+                <div class="detail-meta">
+                    <p><strong>Area / Kawasan:</strong> <span id="detailArea"></span></p>
+                    <p><strong>Estimasi Biaya:</strong> <span id="detailHarga"></span></p>
+                    <p><strong>Alamat Lengkap:</strong> <span id="detailAlamat"></span></p>
+                    <p><strong>Jam Operasional:</strong> <span id="detailJam"></span></p>
+                </div>
+
+                <h3>Deskripsi Lengkap</h3>
+                <p id="detailDeskripsi" class="detail-desc"></p>
+
+                <div class="detail-actions">
+                    <a href="index.xhtml" class="btn btn-batal">&#8592; Kembali ke Katalog</a>
+                    <a id="tombolCatat" href="makanan.xhtml" class="btn">Simpan ke Itinerary</a>
+                </div>
+            </div>
         </div>
     </div>
 </body>

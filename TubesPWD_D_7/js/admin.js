@@ -208,6 +208,12 @@ document.addEventListener('DOMContentLoaded', async function () {
         if (inputFoto.files && inputFoto.files[0]) {
             formData.append('foto_file', inputFoto.files[0]);
         }
+        var inputGaleri = document.getElementById('foto_galeri');
+        if (inputGaleri && inputGaleri.files) {
+            for (var g = 0; g < inputGaleri.files.length; g++) {
+                formData.append('foto_galeri[]', inputGaleri.files[g]);
+            }
+        }
 
         var hasil = await panggilApi('api/tempat.php', formData);
 

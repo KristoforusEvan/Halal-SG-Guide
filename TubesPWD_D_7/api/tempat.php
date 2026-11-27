@@ -1,9 +1,9 @@
 <?php
 // tempat.php
-//   GET tanpa ?id      -> Daftar & filter tempat untuk Homepage (PUBLIK, menyertakan lat & lng)
-//   GET dengan ?id=... -> Detail 1 tempat (PRIVAT, wajib login)
-//   POST aksi=simpan   -> Tambah / Edit konten tempat + Upload Foto ke img/ (Khusus Admin)
-//   POST aksi=hapus    -> Hapus konten tempat (Khusus Admin)
+//   GET tanpa ?id      -> Daftar & filter tempat untuk Homepage (PUBLIK)
+//   GET dengan ?id=... -> Detail 1 tempat beserta array galeri foto (PRIVAT, wajib login)
+//   POST aksi=simpan   -> Tambah / Edit konten tempat + Foto Utama + Banyak Foto Galeri (Admin)
+//   POST aksi=hapus    -> Hapus konten tempat (Admin)
 require 'fungsi.php';
 require 'koneksi.php';
 
@@ -29,7 +29,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
         if (!$row) {
             gagal('Tempat tidak ditemukan.', 404);
         }
-        $row['foto'] = basename($row['foto']);
+
+        $fotoUtama = basename($row['foto']);
+        $row['foto'] = $fotoUtama;
+
+        // Susun daftar galeri dimulai dari foto utama, lalu foto tambahan dari tabel tempat_galeri
+        $galeri = array($fotoUtama);
+        $qGal = mysqli_prepare($conn, 'SELECT foto FROM tempat_galeri WHERE tempat_id = ? ORDER BY id ASC');
+        mysqli_stmt_bind_param($qGal, 'i', $id);
+        mysqli_stmt_execute($qGal);
+        $resGal = mysqli_stmt_get_result($qGal);
+
+        while ($g = mysqli_fetch_assoc($resGal)) {
+            $namaGal = basename($g['foto']);
+            if ($namaGal !== '' && !in_array($namaGal, $galeri, true)) {
+                $galeri[] = $namaGal;
+            }
+        }
+        $row['galeri'] = $galeri;
+
         berhasil('', array('data' => $row));
     }
 
@@ -143,7 +161,6 @@ if ($aksi === 'simpan') {
         gagal('Alamat lengkap maksimal 200 karakter.');
     }
 
-    // Validasi koordinat opsional
     $lat = null;
     $lng = null;
     if ($latInput !== '' || $lngInput !== '') {
@@ -159,44 +176,36 @@ if ($aksi === 'simpan') {
         $lng = (string) $lngFloat;
     }
 
-    // Proses unggah foto baru jika admin memilih file di input foto_file
+    $ekstensiDiizinkan = array(
+        'image/jpeg' => 'jpg',
+        'image/png'  => 'png',
+        'image/webp' => 'webp'
+    );
+    $folderTujuan = dirname(__DIR__) . DIRECTORY_SEPARATOR . 'img';
+
+    // 1. Proses unggah foto utama jika dipilih
     if (isset($_FILES['foto_file']) && $_FILES['foto_file']['error'] !== UPLOAD_ERR_NO_FILE) {
         $file = $_FILES['foto_file'];
-
-        if ($file['error'] === UPLOAD_ERR_INI_SIZE || $file['error'] === UPLOAD_ERR_FORM_SIZE) {
-            gagal('Ukuran foto tempat maksimal 2 MB.');
-        }
-        if ($file['error'] !== UPLOAD_ERR_OK) {
-            gagal('Gagal mengunggah foto tempat. Kode error: ' . $file['error']);
-        }
-        if ($file['size'] > 2 * 1024 * 1024) {
-            gagal('Ukuran foto tempat maksimal 2 MB.');
+        if ($file['error'] !== UPLOAD_ERR_OK || $file['size'] > 2 * 1024 * 1024) {
+            gagal('Foto utama gagal diunggah atau ukurannya melebihi 2 MB.');
         }
 
         $finfo = finfo_open(FILEINFO_MIME_TYPE);
         $mime  = finfo_file($finfo, $file['tmp_name']);
         finfo_close($finfo);
 
-        $ekstensiDiizinkan = array(
-            'image/jpeg' => 'jpg',
-            'image/png'  => 'png',
-            'image/webp' => 'webp'
-        );
-
         if (!isset($ekstensiDiizinkan[$mime])) {
-            gagal('Format foto harus JPG, PNG, atau WEBP.');
+            gagal('Format foto utama harus JPG, PNG, atau WEBP.');
         }
 
-        $folderTujuan = dirname(__DIR__) . DIRECTORY_SEPARATOR . 'img';
         $namaFileBaru = 'tempat_' . time() . '_' . mt_rand(100, 999) . '.' . $ekstensiDiizinkan[$mime];
-        $pathTujuan   = $folderTujuan . DIRECTORY_SEPARATOR . $namaFileBaru;
-
-        if (!move_uploaded_file($file['tmp_name'], $pathTujuan)) {
-            gagal('Gagal menyimpan file foto ke folder img/.', 500);
+        if (!move_uploaded_file($file['tmp_name'], $folderTujuan . DIRECTORY_SEPARATOR . $namaFileBaru)) {
+            gagal('Gagal menyimpan foto utama ke folder img/.', 500);
         }
-
         $foto = $namaFileBaru;
     }
+
+    $targetTempatId = 0;
 
     if ($id !== '') {
         if (!ctype_digit($id)) {
@@ -205,13 +214,45 @@ if ($aksi === 'simpan') {
         $upd = mysqli_prepare($conn, 'UPDATE tempat SET nama = ?, kategori = ?, area = ?, harga_estimasi = ?, lat = ?, lng = ?, keterangan = ?, deskripsi = ?, alamat = ?, jam_buka = ?, status = ?, foto = ? WHERE id = ?');
         mysqli_stmt_bind_param($upd, 'ssssssssssssi', $nama, $kategori, $area, $harga_estimasi, $lat, $lng, $keterangan, $deskripsi, $alamat, $jam_buka, $status, $foto, $id);
         mysqli_stmt_execute($upd);
-        berhasil('Konten tempat berhasil diperbarui.');
+        $targetTempatId = (int) $id;
+    } else {
+        $ins = mysqli_prepare($conn, 'INSERT INTO tempat (nama, kategori, area, harga_estimasi, lat, lng, keterangan, deskripsi, alamat, jam_buka, status, foto) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
+        mysqli_stmt_bind_param($ins, 'ssssssssssss', $nama, $kategori, $area, $harga_estimasi, $lat, $lng, $keterangan, $deskripsi, $alamat, $jam_buka, $status, $foto);
+        mysqli_stmt_execute($ins);
+        $targetTempatId = (int) mysqli_insert_id($conn);
     }
 
-    $ins = mysqli_prepare($conn, 'INSERT INTO tempat (nama, kategori, area, harga_estimasi, lat, lng, keterangan, deskripsi, alamat, jam_buka, status, foto) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
-    mysqli_stmt_bind_param($ins, 'ssssssssssss', $nama, $kategori, $area, $harga_estimasi, $lat, $lng, $keterangan, $deskripsi, $alamat, $jam_buka, $status, $foto);
-    mysqli_stmt_execute($ins);
-    berhasil('Konten tempat baru berhasil ditambahkan.');
+    // 2. Proses unggah banyak foto galeri tambahan (foto_galeri[]) jika admin memilihnya
+    if ($targetTempatId > 0 && isset($_FILES['foto_galeri']) && is_array($_FILES['foto_galeri']['name'])) {
+        $jumlahFile = count($_FILES['foto_galeri']['name']);
+        $finfo = finfo_open(FILEINFO_MIME_TYPE);
+
+        for ($i = 0; $i < $jumlahFile; $i++) {
+            $errCode = $_FILES['foto_galeri']['error'][$i];
+            if ($errCode === UPLOAD_ERR_NO_FILE) {
+                continue;
+            }
+            if ($errCode !== UPLOAD_ERR_OK || $_FILES['foto_galeri']['size'][$i] > 2 * 1024 * 1024) {
+                continue;
+            }
+
+            $tmpName = $_FILES['foto_galeri']['tmp_name'][$i];
+            $mime    = finfo_file($finfo, $tmpName);
+            if (!isset($ekstensiDiizinkan[$mime])) {
+                continue;
+            }
+
+            $namaGaleri = 'galeri_' . $targetTempatId . '_' . time() . '_' . $i . '_' . mt_rand(10, 99) . '.' . $ekstensiDiizinkan[$mime];
+            if (move_uploaded_file($tmpName, $folderTujuan . DIRECTORY_SEPARATOR . $namaGaleri)) {
+                $insGal = mysqli_prepare($conn, 'INSERT INTO tempat_galeri (tempat_id, foto) VALUES (?, ?)');
+                mysqli_stmt_bind_param($insGal, 'is', $targetTempatId, $namaGaleri);
+                mysqli_stmt_execute($insGal);
+            }
+        }
+        finfo_close($finfo);
+    }
+
+    berhasil($id !== '' ? 'Konten tempat berhasil diperbarui.' : 'Konten tempat baru berhasil ditambahkan.');
 }
 
 gagal('Aksi tidak dikenal.');

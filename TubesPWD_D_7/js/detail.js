@@ -1,70 +1,120 @@
 // ============================================================
-// detail.js - halaman deskripsi detail tempat (wajib login)
+// detail.js - halaman detail privat + Carousel Gambar Auto-Slide
 // ============================================================
 
-function gambarDetail(t) {
-    var wadah = document.getElementById('kontenDetail');
+var timerSlide = null;
+
+function buatCarouselGambar(wadah, daftarFoto, namaTempat) {
     kosongkan(wadah);
-
-    var kartu = buatElemen('div', '', 'detail-card');
-
-    var banner = buatElemen('div', '', 'detail-banner kat-' + t.kategori);
-    if (t.foto) {
-        var img = document.createElement('img');
-        img.setAttribute('src', 'img/' + t.foto);
-        img.setAttribute('alt', t.nama);
-        banner.appendChild(img);
-    }
-    kartu.appendChild(banner);
-
-    var badan = buatElemen('div', '', 'detail-body');
-    badan.appendChild(buatElemen('span', t.status, 'badge-halal'));
-    badan.appendChild(buatElemen('h2', t.nama, 'detail-judul'));
-
-    var meta = buatElemen('div', '', 'detail-meta');
-
-    var pArea = document.createElement('p');
-    pArea.appendChild(buatElemen('strong', 'Area / Kawasan: '));
-    pArea.appendChild(document.createTextNode(t.area));
-    meta.appendChild(pArea);
-
-    var pHarga = document.createElement('p');
-    pHarga.appendChild(buatElemen('strong', 'Estimasi Biaya: '));
-    pHarga.appendChild(document.createTextNode(t.harga_estimasi));
-    meta.appendChild(pHarga);
-
-    if (t.alamat) {
-        var pAlamat = document.createElement('p');
-        pAlamat.appendChild(buatElemen('strong', 'Alamat Lengkap: '));
-        pAlamat.appendChild(document.createTextNode(t.alamat));
-        meta.appendChild(pAlamat);
+    if (timerSlide) {
+        clearInterval(timerSlide);
+        timerSlide = null;
     }
 
-    if (t.jam_buka) {
-        var pJam = document.createElement('p');
-        pJam.appendChild(buatElemen('strong', 'Jam Operasional: '));
-        pJam.appendChild(document.createTextNode(t.jam_buka));
-        meta.appendChild(pJam);
+    var daftar = (Array.isArray(daftarFoto) && daftarFoto.length > 0) ? daftarFoto : ['bg-singapore.jpg'];
+    var indeksAktif = 0;
+
+    var wrap = buatElemen('div', '', 'carousel-wrap');
+
+    var img = document.createElement('img');
+    img.setAttribute('src', 'img/' + daftar[0]);
+    img.setAttribute('alt', namaTempat);
+    img.className = 'carousel-img';
+    wrap.appendChild(img);
+
+    // Jika gambar hanya 1, tampilkan tanpa panah dan tanpa auto-slide
+    if (daftar.length <= 1) {
+        wadah.appendChild(wrap);
+        return;
     }
 
-    badan.appendChild(meta);
+    // Penghitung slide di pojok kanan atas (contoh: 1 / 3)
+    var counter = buatElemen('span', '1 / ' + daftar.length, 'carousel-counter');
+    wrap.appendChild(counter);
 
-    badan.appendChild(buatElemen('h3', 'Deskripsi Lengkap'));
-    badan.appendChild(buatElemen('p', t.deskripsi || t.keterangan, 'detail-deskripsi'));
+    // Tombol panah kiri (<) dan kanan (>)
+    var btnPrev = buatElemen('button', '\u2039', 'carousel-btn carousel-prev');
+    btnPrev.setAttribute('type', 'button');
+    btnPrev.setAttribute('title', 'Gambar sebelumnya');
 
-    kartu.appendChild(badan);
-    wadah.appendChild(kartu);
+    var btnNext = buatElemen('button', '\u203A', 'carousel-btn carousel-next');
+    btnNext.setAttribute('type', 'button');
+    btnNext.setAttribute('title', 'Gambar berikutnya');
 
-    var tombolCatat = document.getElementById('tombolCatat');
-    if (t.kategori === 'kuliner') {
-        tombolCatat.setAttribute('href', 'makanan.xhtml');
-        tombolCatat.textContent = '+ Catat ke Rencana Kuliner';
-        tombolCatat.classList.remove('sembunyi');
-    } else if (t.kategori === 'masjid') {
-        tombolCatat.setAttribute('href', 'masjid.xhtml');
-        tombolCatat.textContent = '+ Catat ke Jadwal Masjid';
-        tombolCatat.classList.remove('sembunyi');
+    wrap.appendChild(btnPrev);
+    wrap.appendChild(btnNext);
+
+    // Indikator titik (dots) di bagian bawah gambar
+    var dotsWrap = buatElemen('div', '', 'carousel-dots');
+    var daftarDot = [];
+
+    for (var i = 0; i < daftar.length; i++) {
+        (function (idx) {
+            var dot = buatElemen('button', '', idx === 0 ? 'carousel-dot aktif' : 'carousel-dot');
+            dot.setAttribute('type', 'button');
+            dot.setAttribute('title', 'Gambar ' + (idx + 1));
+            dot.addEventListener('click', function () {
+                pindahSlide(idx);
+                mulaiAutoSlide();
+            });
+            dotsWrap.appendChild(dot);
+            daftarDot.push(dot);
+        })(i);
     }
+    wrap.appendChild(dotsWrap);
+
+    function pindahSlide(tujuan) {
+        indeksAktif = (tujuan + daftar.length) % daftar.length;
+        img.classList.add('fading');
+        setTimeout(function () {
+            img.setAttribute('src', 'img/' + daftar[indeksAktif]);
+            img.setAttribute('alt', namaTempat + ' (' + (indeksAktif + 1) + ')');
+            img.classList.remove('fading');
+        }, 140);
+
+        counter.textContent = (indeksAktif + 1) + ' / ' + daftar.length;
+        for (var j = 0; j < daftarDot.length; j++) {
+            if (j === indeksAktif) {
+                daftarDot[j].classList.add('aktif');
+            } else {
+                daftarDot[j].classList.remove('aktif');
+            }
+        }
+    }
+
+    function mulaiAutoSlide() {
+        if (timerSlide) {
+            clearInterval(timerSlide);
+        }
+        // Geser otomatis ke gambar berikutnya setiap 3.5 detik jika tidak diinteraksi
+        timerSlide = setInterval(function () {
+            pindahSlide(indeksAktif + 1);
+        }, 3500);
+    }
+
+    function hentikanAutoSlide() {
+        if (timerSlide) {
+            clearInterval(timerSlide);
+            timerSlide = null;
+        }
+    }
+
+    btnPrev.addEventListener('click', function () {
+        pindahSlide(indeksAktif - 1);
+        mulaiAutoSlide();
+    });
+
+    btnNext.addEventListener('click', function () {
+        pindahSlide(indeksAktif + 1);
+        mulaiAutoSlide();
+    });
+
+    // Jeda auto-slide saat kursor diarahkan ke gambar agar user nyaman melihat
+    wrap.addEventListener('mouseenter', hentikanAutoSlide);
+    wrap.addEventListener('mouseleave', mulaiAutoSlide);
+
+    wadah.appendChild(wrap);
+    mulaiAutoSlide();
 }
 
 document.addEventListener('DOMContentLoaded', async function () {
@@ -76,7 +126,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     var params = new URLSearchParams(window.location.search);
     var id = params.get('id');
     if (!id) {
-        tampilPesan('ID tempat tidak ditemukan di alamat URL.', 'error');
+        tampilPesan('ID tempat tidak ditemukan di URL.', 'error');
         return;
     }
 
@@ -89,5 +139,29 @@ document.addEventListener('DOMContentLoaded', async function () {
         return;
     }
 
-    gambarDetail(hasil.data);
+    var t = hasil.data;
+    document.title = t.nama + ' - Halal SG Guide';
+
+    buatCarouselGambar(document.getElementById('detailBanner'), t.galeri, t.nama);
+
+    document.getElementById('detailStatus').textContent = t.status;
+    document.getElementById('detailNama').textContent = t.nama;
+    document.getElementById('detailArea').textContent = t.area;
+    document.getElementById('detailHarga').textContent = t.harga_estimasi;
+    document.getElementById('detailAlamat').textContent = t.alamat;
+    document.getElementById('detailJam').textContent = t.jam_buka;
+    document.getElementById('detailDeskripsi').textContent = t.deskripsi;
+
+    var tombolCatat = document.getElementById('tombolCatat');
+    if (t.kategori === 'kuliner') {
+        tombolCatat.setAttribute('href', 'makanan.xhtml');
+        tombolCatat.textContent = '+ Catat ke Rencana Kuliner';
+    } else if (t.kategori === 'masjid') {
+        tombolCatat.setAttribute('href', 'masjid.xhtml');
+        tombolCatat.textContent = '+ Jadwalkan ke Kunjungan Masjid';
+    } else {
+        tombolCatat.classList.add('sembunyi');
+    }
+
+    document.getElementById('kartuDetail').classList.remove('sembunyi');
 });
