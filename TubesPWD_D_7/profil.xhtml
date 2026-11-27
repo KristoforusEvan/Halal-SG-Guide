@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="id" lang="id">
+<head>
+    <meta http-equiv="Content-Type" content="application/xhtml+xml; charset=UTF-8" />
+    <title>Profil Pengguna - Halal SG Guide</title>
+    <link rel="stylesheet" type="text/css" href="css/style.css?v=7" />
+    <script type="text/javascript" src="js/umum.js?v=7"></script>
+    <script type="text/javascript" src="js/validasi.js?v=7"></script>
+    <script type="text/javascript" src="js/profil.js?v=7"></script>
+</head>
+<body>
+    <div id="header">
+        <h1>Halal SG Guide - Profil Wisatawan</h1>
+        <p>Kelola informasi pribadi akun wisata halal Anda</p>
+    </div>
+
+    <!-- Navbar diisi oleh JavaScript (umum.js) -->
+    <div id="nav"></div>
+
+    <div class="container">
+        <h2>Lihat &amp; Update Profil Pengguna</h2>
+
+        <div id="pesan"></div>
+
+        <div class="card-form">
+            <form id="formProfil" action="api/profil.php" method="post">
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" name="username" />
+                    <p class="form-hint">3-30 karakter: huruf, angka, dan underscore (_).</p>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="text" id="email" name="email" />
+                </div>
+                <div class="form-group">
+                    <label for="nama">Nama Lengkap (opsional)</label>
+                    <input type="text" id="nama" name="nama" />
+                </div>
+                <div class="form-group">
+                    <label for="asal_kota">Asal Kota (opsional)</label>
+                    <input type="text" id="asal_kota" name="asal_kota" />
+                </div>
+                <div><input type="submit" class="btn" value="Simpan Perubahan Profil" /></div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

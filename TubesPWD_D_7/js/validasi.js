@@ -1,123 +1,126 @@
-// Hapus pesan error JS saat pengguna mulai mengetik ulang
-function hapusPesanError() {
-    var wadahError = document.getElementById("pesanError");
-    if (wadahError) {
-        wadahError.innerHTML = "";
-    }
+// ============================================================
+// validasi.js - validasi form di sisi browser (aturannya disamakan
+// dengan fungsi validasi di api/fungsi.php).
+// Setiap fn_ValXxx() mengembalikan ARRAY teks error. Array kosong = valid.
+// ============================================================
+
+var POLA_NAMA = /^[a-zA-Z ]+$/;                 // huruf dan spasi saja
+var POLA_EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;  // format email sederhana
+var POLA_USERNAME = /^[a-zA-Z0-9_]{3,30}$/;     // 3-30 huruf/angka/underscore
+var MIN_PASSWORD = 8;                           // password minimal 8 karakter
+
+// Ambil nilai sebuah field berdasarkan id (string kosong kalau field tidak ada)
+function nilai(id) {
+    var el = document.getElementById(id);
+    return el ? el.value : '';
 }
 
-// Pasang listener "input" ke field yang ada di halaman
-document.addEventListener("DOMContentLoaded", function () {
-    var daftarInput = ["username", "email", "password"];
-    for (var i = 0; i < daftarInput.length; i++) {
-        var elemen = document.getElementById(daftarInput[i]);
-        if (elemen) {
-            elemen.addEventListener("input", hapusPesanError);
-        }
+// Hapus pesan saat pengguna mulai mengetik/mengubah isian lagi
+document.addEventListener('DOMContentLoaded', function () {
+    var kolom = document.querySelectorAll('input, select, textarea');
+    for (var i = 0; i < kolom.length; i++) {
+        kolom[i].addEventListener('input', function () {
+            tampilPesan('');
+        });
     }
 });
 
-// Validasi form register: cukup username, email, dan password (min 8 karakter)
+// Validasi form register: cukup username, email, dan password
 function fn_ValRegister() {
     var daftarError = [];
-    var username = document.getElementById("username").value.trim();
-    var email = document.getElementById("email").value.trim();
-    var password = document.getElementById("password").value;
-    var wadahError = document.getElementById("pesanError");
+    var username = nilai('username').trim();
+    var email = nilai('email').trim().toLowerCase();
+    var password = nilai('password');
 
-    var polaUsername = /^[a-zA-Z0-9_]+$/;
-    var polaEmail = /^[a-z0-9][a-z0-9_\.-]{0,}[a-z0-9]@[a-z0-9][a-z0-9_\.-]{0,}[a-z0-9][\.][a-z0-9]{2,4}$/;
-
-    if (username === "") {
-        daftarError.push("Username wajib diisi.");
-    } else if (!polaUsername.test(username)) {
-        daftarError.push("Username hanya boleh berisi huruf, angka, dan underscore (_).");
+    if (username === '') {
+        daftarError.push('Username wajib diisi.');
+    } else if (!POLA_USERNAME.test(username)) {
+        daftarError.push('Username 3-30 karakter, hanya huruf, angka, dan underscore (_).');
     }
 
-    if (email === "") {
-        daftarError.push("Email wajib diisi.");
-    } else if (!polaEmail.test(email)) {
-        daftarError.push("Format email harus huruf kecil dan valid (contoh: nama@gmail.com).");
+    if (email === '') {
+        daftarError.push('Email wajib diisi.');
+    } else if (!POLA_EMAIL.test(email)) {
+        daftarError.push('Format email tidak valid (contoh: nama@gmail.com).');
     }
 
-    if (password === "") {
-        daftarError.push("Password wajib diisi.");
-    } else if (password.length < 8) {
-        daftarError.push("Password minimal 8 karakter.");
+    if (password === '') {
+        daftarError.push('Password wajib diisi.');
+    } else if (password.length < MIN_PASSWORD) {
+        daftarError.push('Password minimal ' + MIN_PASSWORD + ' karakter.');
     }
-
-    if (daftarError.length > 0) {
-        wadahError.innerHTML = "<p class=\"error\">" + daftarError.join("<br />") + "</p>";
-        return false;
-    }
-
-    wadahError.innerHTML = "";
-    return true;
+    return daftarError;
 }
 
 // Validasi form login: cukup email dan password
 function fn_ValLogin() {
     var daftarError = [];
-    var email = document.getElementById("email").value.trim();
-    var password = document.getElementById("password").value;
-    var wadahError = document.getElementById("pesanError");
-    var polaEmail = /^[a-z0-9][a-z0-9_\.-]{0,}[a-z0-9]@[a-z0-9][a-z0-9_\.-]{0,}[a-z0-9][\.][a-z0-9]{2,4}$/;
+    var email = nilai('email').trim().toLowerCase();
+    var password = nilai('password');
 
-    if (email === "") {
-        daftarError.push("Email belum diisi.");
-    } else if (!polaEmail.test(email)) {
-        daftarError.push("Format email harus huruf kecil dan valid (contoh: nama@gmail.com).");
+    if (email === '') {
+        daftarError.push('Email belum diisi.');
+    } else if (!POLA_EMAIL.test(email)) {
+        daftarError.push('Format email tidak valid (contoh: nama@gmail.com).');
     }
 
-    if (password === "") {
-        daftarError.push("Password belum diisi.");
+    if (password === '') {
+        daftarError.push('Password belum diisi.');
     }
-
-    if (daftarError.length > 0) {
-        wadahError.innerHTML = "<p class=\"error\">" + daftarError.join("<br />") + "</p>";
-        return false;
-    }
-
-    wadahError.innerHTML = "";
-    return true;
+    return daftarError;
 }
 
-// Validasi form rencana makanan (makanan.php)
+// Validasi form profil: username & email wajib; nama lengkap dan asal kota opsional
+function fn_ValProfil() {
+    var daftarError = [];
+    var username = nilai('username').trim();
+    var email = nilai('email').trim().toLowerCase();
+    var nama = nilai('nama').trim();
+
+    if (username === '') {
+        daftarError.push('Username wajib diisi.');
+    } else if (!POLA_USERNAME.test(username)) {
+        daftarError.push('Username 3-30 karakter, hanya huruf, angka, dan underscore (_).');
+    }
+
+    if (email === '') {
+        daftarError.push('Email wajib diisi.');
+    } else if (!POLA_EMAIL.test(email)) {
+        daftarError.push('Format email tidak valid (contoh: nama@gmail.com).');
+    }
+
+    if (nama !== '' && !POLA_NAMA.test(nama)) {
+        daftarError.push('Nama lengkap hanya boleh berisi huruf dan spasi.');
+    }
+    return daftarError;
+}
+
+// Validasi form rencana makanan
 function fn_ValMakanan() {
-    var sMsg = "";
-    if (document.getElementById("nama_tempat").value.trim() === "") {
-        sMsg += "\n* Nama restoran/kedai wajib diisi";
+    var daftarError = [];
+    if (nilai('nama_tempat').trim() === '') {
+        daftarError.push('Nama restoran/kedai wajib diisi.');
     }
-    if (document.getElementById("lokasi_mrt").value.trim() === "") {
-        sMsg += "\n* Lokasi / Stasiun MRT terdekat wajib diisi";
+    if (nilai('lokasi_mrt').trim() === '') {
+        daftarError.push('Lokasi / stasiun MRT terdekat wajib diisi.');
     }
-    if (document.getElementById("catatan").value.trim() === "") {
-        sMsg += "\n* Catatan menu/sumber verifikasi wajib diisi";
+    if (nilai('catatan').trim() === '') {
+        daftarError.push('Catatan menu/sumber verifikasi wajib diisi.');
     }
-
-    if (sMsg !== "") {
-        alert("Peringatan:\n" + sMsg);
-        return false;
-    }
-    return true;
+    return daftarError;
 }
 
-// Validasi form jadwal masjid (masjid.php)
+// Validasi form jadwal masjid
 function fn_ValMasjid() {
-    var sMsg = "";
-    if (document.getElementById("nama_masjid").value.trim() === "") {
-        sMsg += "\n* Nama masjid wajib diisi";
+    var daftarError = [];
+    if (nilai('nama_masjid').trim() === '') {
+        daftarError.push('Nama masjid wajib diisi.');
     }
-    if (document.getElementById("area_singapura").value.trim() === "") {
-        sMsg += "\n* Area Singapura wajib diisi";
+    if (nilai('area_singapura').trim() === '') {
+        daftarError.push('Area Singapura wajib diisi.');
     }
-    if (document.getElementById("keterangan").value.trim() === "") {
-        sMsg += "\n* Keterangan jadwal wajib diisi";
+    if (nilai('keterangan').trim() === '') {
+        daftarError.push('Keterangan jadwal wajib diisi.');
     }
-
-    if (sMsg !== "") {
-        alert("Peringatan:\n" + sMsg);
-        return false;
-    }
-    return true;
+    return daftarError;
 }

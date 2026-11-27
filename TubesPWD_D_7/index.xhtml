@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="id" lang="id">
+<head>
+    <meta http-equiv="Content-Type" content="application/xhtml+xml; charset=UTF-8" />
+    <title>Halal SG Guide - Panduan Wisata Halal Singapura</title>
+    <link rel="stylesheet" type="text/css" href="css/style.css?v=7" />
+    <script type="text/javascript" src="js/umum.js?v=7"></script>
+    <script type="text/javascript" src="js/validasi.js?v=7"></script>
+    <script type="text/javascript" src="js/index.js?v=7"></script>
+</head>
+<body>
+    <div id="header">
+        <h1>Halal SG Guide</h1>
+        <p>Cari kuliner halal dan masjid terdekat selama liburan di Singapura</p>
+    </div>
+
+    <!-- Navbar diisi oleh JavaScript (umum.js) sesuai status login -->
+    <div id="nav"></div>
+
+    <div class="container">
+        <!-- Sapaan hanya diisi kalau sudah login -->
+        <p id="sapaan"></p>
+
+        <!-- Form pencarian (dikirim lewat fetch oleh index.js, halaman tidak reload) -->
+        <div class="card-form">
+            <form id="formCari" action="index.xhtml" method="get">
+                <div class="form-group">
+                    <label for="q">Cari nama tempat / stasiun MRT</label>
+                    <input type="text" id="q" name="q" />
+                </div>
+                <div class="form-group">
+                    <label for="kategori">Kategori</label>
+                    <select id="kategori" name="kategori">
+                        <option value="">Semua</option>
+                        <option value="kuliner">Kuliner Halal</option>
+                        <option value="masjid">Masjid</option>
+                        <option value="wisata">Wisata</option>
+                    </select>
+                </div>
+                <div><input type="submit" class="btn" value="Cari" /></div>
+            </form>
+        </div>
+
+        <h2>Hasil (<span id="jumlah">0</span> tempat)</h2>
+
+        <div id="pesan"></div>
+
+        <!-- Kartu tempat digambar oleh index.js -->
+        <div id="gridTempat" class="grid-tempat"></div>
+    </div>
+</body>
+</html>

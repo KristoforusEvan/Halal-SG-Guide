@@ -1,7 +1,8 @@
 <?php
-// Daftar tempat untuk homepage.
+// Daftar tempat untuk homepage (dibaca oleh api/tempat.php).
 // Mau tambah konten? Salin satu blok array(...) di bawah, tempel di bawahnya, lalu ganti isinya.
 // kategori hanya boleh: 'kuliner', 'masjid', atau 'wisata'
+// foto = NAMA FILE di folder img/ (kosongkan '' kalau belum ada foto)
 // Jangan lupa tanda koma di akhir tiap blok. Kalau teks ada tanda petik ('), tulis \'
 $daftarTempat = array(
     array(
@@ -53,4 +54,3 @@ $daftarTempat = array(
         'foto'       => 'masjid-jamae.jpg'
     )
 );
-?>

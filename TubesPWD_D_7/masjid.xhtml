@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="id" lang="id">
+<head>
+    <meta http-equiv="Content-Type" content="application/xhtml+xml; charset=UTF-8" />
+    <title>Jadwal Masjid &amp; Ibadah - Halal SG Guide</title>
+    <link rel="stylesheet" type="text/css" href="css/style.css?v=7" />
+    <script type="text/javascript" src="js/umum.js?v=7"></script>
+    <script type="text/javascript" src="js/validasi.js?v=7"></script>
+    <script type="text/javascript" src="js/masjid.js?v=7"></script>
+</head>
+<body>
+    <div id="header">
+        <h1>Halal SG Guide - Jadwal Kunjungan Masjid &amp; Ibadah</h1>
+        <p>Atur jadwal sholat dan rute masjid terdekat di kawasan wisata Singapura</p>
+    </div>
+
+    <!-- Navbar diisi oleh JavaScript (umum.js) -->
+    <div id="nav"></div>
+
+    <div class="container">
+        <h2 id="judulForm">Tambah Jadwal Kunjungan Masjid</h2>
+
+        <div id="pesan"></div>
+
+        <div class="card-form">
+            <form id="formMasjid" action="api/masjid.php" method="post">
+                <!-- id_edit kosong = tambah data baru; berisi id = edit data -->
+                <div><input type="hidden" id="id_edit" name="id" value="" /></div>
+                <div class="form-group">
+                    <label for="nama_masjid">Nama Masjid / Musholla</label>
+                    <input type="text" id="nama_masjid" name="nama_masjid" />
+                </div>
+                <div class="form-group">
+                    <label for="area_singapura">Area / Stasiun MRT</label>
+                    <input type="text" id="area_singapura" name="area_singapura" />
+                </div>
+                <div class="form-group">
+                    <label for="waktu_sholat">Rencana Waktu Sholat</label>
+                    <select id="waktu_sholat" name="waktu_sholat">
+                        <option value="Dzuhur &amp; Ashar (Jamak)">Dzuhur &amp; Ashar (Jamak)</option>
+                        <option value="Maghrib &amp; Isya (Jamak)">Maghrib &amp; Isya (Jamak)</option>
+                        <option value="Sholat Jumat">Sholat Jumat</option>
+                        <option value="Subuh">Subuh</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="keterangan">Keterangan Rute / Akses</label>
+                    <textarea id="keterangan" name="keterangan" rows="3" cols="30"></textarea>
+                </div>
+                <div>
+                    <input type="submit" id="tombolSimpan" class="btn" value="Simpan Jadwal Ibadah" />
+                    <input type="button" id="tombolBatal" class="btn btn-batal sembunyi" value="Batal Edit" />
+                </div>
+            </form>
+        </div>
+
+        <h2>Daftar Rencana Kunjungan Masjid Anda</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>No</th>
+                    <th>Nama Masjid</th>
+                    <th>Area / MRT</th>
+                    <th>Waktu Sholat</th>
+                    <th>Keterangan</th>
+                    <th>Aksi</th>
+                </tr>
+            </thead>
+            <!-- Baris tabel digambar oleh masjid.js -->
+            <tbody id="isiTabel"></tbody>
+        </table>
+        <p><strong>Jumlah jadwal masjid:</strong> <span id="jumlah">0</span></p>
+    </div>
+</body>
+</html>

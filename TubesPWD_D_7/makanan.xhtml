@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="id" lang="id">
+<head>
+    <meta http-equiv="Content-Type" content="application/xhtml+xml; charset=UTF-8" />
+    <title>Rencana Kuliner Halal - Halal SG Guide</title>
+    <link rel="stylesheet" type="text/css" href="css/style.css?v=7" />
+    <script type="text/javascript" src="js/umum.js?v=7"></script>
+    <script type="text/javascript" src="js/validasi.js?v=7"></script>
+    <script type="text/javascript" src="js/makanan.js?v=7"></script>
+</head>
+<body>
+    <div id="header">
+        <h1>Halal SG Guide - Rencana Wisata Kuliner Halal</h1>
+        <p>Catat dan verifikasi restoran halal selama perjalanan Anda di Singapura</p>
+    </div>
+
+    <!-- Navbar diisi oleh JavaScript (umum.js) -->
+    <div id="nav"></div>
+
+    <div class="container">
+        <h2 id="judulForm">Tambah Rencana Kuliner Halal</h2>
+
+        <div id="pesan"></div>
+
+        <div class="card-form">
+            <form id="formMakanan" action="api/makanan.php" method="post">
+                <!-- id_edit kosong = tambah data baru; berisi id = edit data -->
+                <div><input type="hidden" id="id_edit" name="id" value="" /></div>
+                <div class="form-group">
+                    <label for="nama_tempat">Nama Restoran / Kedai</label>
+                    <input type="text" id="nama_tempat" name="nama_tempat" />
+                </div>
+                <div class="form-group">
+                    <label for="lokasi_mrt">Lokasi / Stasiun MRT Terdekat</label>
+                    <input type="text" id="lokasi_mrt" name="lokasi_mrt" />
+                </div>
+                <div class="form-group">
+                    <label for="status_halal">Kategori Verifikasi Halal</label>
+                    <select id="status_halal" name="status_halal">
+                        <option value="Sertifikat Halal MUIS">Sertifikat Halal MUIS</option>
+                        <option value="Muslim-Owned (Pemilik Muslim)">Muslim-Owned (Pemilik Muslim)</option>
+                        <option value="No Pork No Lard">No Pork No Lard</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="catatan">Catatan Menu &amp; Sumber Verifikasi</label>
+                    <textarea id="catatan" name="catatan" rows="3" cols="30"></textarea>
+                </div>
+                <div>
+                    <input type="submit" id="tombolSimpan" class="btn" value="Simpan Rencana Kuliner" />
+                    <input type="button" id="tombolBatal" class="btn btn-batal sembunyi" value="Batal Edit" />
+                </div>
+            </form>
+        </div>
+
+        <h2>Daftar Rencana Wisata Kuliner Anda</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>No</th>
+                    <th>Nama Tempat</th>
+                    <th>Lokasi / MRT</th>
+                    <th>Status Halal</th>
+                    <th>Catatan</th>
+                    <th>Aksi</th>
+                </tr>
+            </thead>
+            <!-- Baris tabel digambar oleh makanan.js -->
+            <tbody id="isiTabel"></tbody>
+        </table>
+        <p><strong>Jumlah rencana kuliner:</strong> <span id="jumlah">0</span></p>
+    </div>
+</body>
+</html>
