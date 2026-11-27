@@ -1,7 +1,9 @@
 // ============================================================
 // index.js - homepage publik: pencarian + kartu tempat
-// Data diambil dari api/tempat.php (tidak perlu login).
+// Klik kartu: jika belum login -> login.xhtml; jika sudah -> detail.xhtml?id=...
 // ============================================================
+
+var sesiAktif = null; // menyimpan objek sesi jika sudah login, null jika tamu
 
 // Gambar kartu-kartu tempat ke dalam <div id="gridTempat">
 function tampilKartu(daftar) {
@@ -9,28 +11,42 @@ function tampilKartu(daftar) {
     kosongkan(grid);
 
     for (var i = 0; i < daftar.length; i++) {
-        var t = daftar[i];
+        (function (t) {
+            var kartu = buatElemen('div', '', 'kartu-tempat');
+            kartu.setAttribute('title', sesiAktif ? 'Klik untuk melihat deskripsi detail' : 'Login terlebih dahulu untuk melihat detail');
 
-        var kartu = buatElemen('div', '', 'kartu-tempat');
+            // Kotak gambar
+            var gambar = buatElemen('div', '', 'kartu-gambar kat-' + t.kategori);
+            if (t.foto) {
+                var img = document.createElement('img');
+                img.setAttribute('src', 'img/' + t.foto);
+                img.setAttribute('alt', t.nama);
+                gambar.appendChild(img);
+            }
+            kartu.appendChild(gambar);
 
-        // Kotak gambar: kalau foto kosong, tetap tampil sebagai kotak warna sesuai kategori
-        var gambar = buatElemen('div', '', 'kartu-gambar kat-' + t.kategori);
-        if (t.foto) {
-            var img = document.createElement('img');
-            img.setAttribute('src', 'img/' + t.foto);
-            img.setAttribute('alt', t.nama);
-            gambar.appendChild(img);
-        }
-        kartu.appendChild(gambar);
+            var isi = buatElemen('div', '', 'kartu-isi');
+            isi.appendChild(buatElemen('span', t.status, 'badge-halal'));
+            isi.appendChild(buatElemen('h3', t.nama));
+            isi.appendChild(buatElemen('p', t.area_mrt, 'kartu-mrt'));
+            isi.appendChild(buatElemen('p', t.keterangan));
 
-        var isi = buatElemen('div', '', 'kartu-isi');
-        isi.appendChild(buatElemen('span', t.status, 'badge-halal'));
-        isi.appendChild(buatElemen('h3', t.nama));
-        isi.appendChild(buatElemen('p', t.area_mrt, 'kartu-mrt'));
-        isi.appendChild(buatElemen('p', t.keterangan));
-        kartu.appendChild(isi);
+            var teksCta = sesiAktif ? 'Lihat detail tempat \u2192' : 'Login untuk lihat detail \u2192';
+            isi.appendChild(buatElemen('p', teksCta, 'kartu-cta'));
 
-        grid.appendChild(kartu);
+            kartu.appendChild(isi);
+
+            // Aksi saat kartu tempat diklik
+            kartu.addEventListener('click', function () {
+                if (!sesiAktif) {
+                    window.location.href = 'login.xhtml';
+                    return;
+                }
+                window.location.href = 'detail.xhtml?id=' + encodeURIComponent(t.id);
+            });
+
+            grid.appendChild(kartu);
+        })(daftar[i]);
     }
 }
 
@@ -57,20 +73,20 @@ async function cariTempat() {
 }
 
 document.addEventListener('DOMContentLoaded', async function () {
-    var sesi = await siapkanHalaman('bebas');
+    sesiAktif = await siapkanHalaman('bebas');
 
     // Sapaan hanya muncul kalau sudah login
-    if (sesi) {
+    if (sesiAktif) {
         var sapaan = document.getElementById('sapaan');
         sapaan.appendChild(document.createTextNode('Halo, '));
-        sapaan.appendChild(buatElemen('strong', sesi.nama));
+        sapaan.appendChild(buatElemen('strong', sesiAktif.nama));
         sapaan.appendChild(document.createTextNode('!'));
     }
 
     document.getElementById('formCari').addEventListener('submit', function (e) {
-        e.preventDefault(); // cegah halaman reload, pencarian lewat fetch
+        e.preventDefault();
         cariTempat();
     });
 
-    cariTempat(); // tampilkan semua tempat saat halaman pertama dibuka
+    cariTempat();
 });
