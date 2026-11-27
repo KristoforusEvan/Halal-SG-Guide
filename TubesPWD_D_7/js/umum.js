@@ -100,6 +100,7 @@ function tambahLink(nav, teks, href) {
 }
 
 function bangunNavbar(sesi) {
+    pasangScrollProgress();
     var nav = document.getElementById('nav');
     if (!nav) {
         return;
@@ -150,4 +151,36 @@ async function siapkanHalaman(aturan) {
     }
     bangunNavbar(sesi);
     return sesi;
+}
+
+// ============================================================
+// Scroll Progress Bar - indikator garis di paling atas layar
+// ============================================================
+function pasangScrollProgress() {
+    // Cegah duplikasi jika dipanggil lebih dari sekali
+    if (document.getElementById('scrollProgressBar')) {
+        return;
+    }
+
+    var wadah = buatElemen('div', '', 'scroll-progress-wrap');
+    var bar = buatElemen('div', '', 'scroll-progress-bar');
+    bar.setAttribute('id', 'scrollProgressBar');
+    wadah.appendChild(bar);
+    document.body.insertBefore(wadah, document.body.firstChild);
+
+    function perbaruiProgress() {
+        var scrollTop = window.scrollY || document.documentElement.scrollTop || 0;
+        var tinggiDokumen = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+        var persen = tinggiDokumen > 0 ? (scrollTop / tinggiDokumen) * 100 : 0;
+        if (persen < 0) {
+            persen = 0;
+        } else if (persen > 100) {
+            persen = 100;
+        }
+        bar.style.width = persen + '%';
+    }
+
+    window.addEventListener('scroll', perbaruiProgress, { passive: true });
+    window.addEventListener('resize', perbaruiProgress, { passive: true });
+    perbaruiProgress();
 }
