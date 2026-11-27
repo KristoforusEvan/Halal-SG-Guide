@@ -1,11 +1,9 @@
 // ============================================================
 // makanan.js - CRUD 1: rencana kuliner halal (wajib login)
-// Semua data diproses backend lewat api/makanan.php
 // ============================================================
 
-var daftarData = []; // salinan data terakhir dari server (dipakai saat tombol Edit)
+var daftarData = [];
 
-// ---------- READ: ambil daftar lalu gambar tabel ----------
 async function muatDaftar() {
     var hasil = await panggilApi('api/makanan.php');
     if (sesiHabis(hasil)) {
@@ -19,7 +17,6 @@ async function muatDaftar() {
     gambarTabel();
 }
 
-// Buat satu tombol bergaya teks (Edit / Hapus)
 function buatTombol(teks, kelas, saatKlik) {
     var tombol = buatElemen('button', teks, 'tombol-teks ' + kelas);
     tombol.setAttribute('type', 'button');
@@ -27,7 +24,6 @@ function buatTombol(teks, kelas, saatKlik) {
     return tombol;
 }
 
-// Buat satu baris tabel untuk satu data
 function buatBaris(row, nomor) {
     var tr = document.createElement('tr');
     tr.appendChild(buatElemen('td', String(nomor)));
@@ -35,8 +31,6 @@ function buatBaris(row, nomor) {
     var tdNama = document.createElement('td');
     tdNama.appendChild(buatElemen('strong', row.nama_tempat));
     tr.appendChild(tdNama);
-
-    tr.appendChild(buatElemen('td', row.lokasi_mrt));
 
     var tdStatus = document.createElement('td');
     tdStatus.appendChild(buatElemen('span', row.status_halal, 'badge-halal'));
@@ -60,7 +54,7 @@ function gambarTabel() {
     if (daftarData.length === 0) {
         var trKosong = document.createElement('tr');
         var td = buatElemen('td', 'Belum ada rencana kuliner. Tambahkan lewat form di atas.');
-        td.setAttribute('colspan', '6');
+        td.setAttribute('colspan', '5');
         trKosong.appendChild(td);
         isi.appendChild(trKosong);
     }
@@ -70,12 +64,10 @@ function gambarTabel() {
     document.getElementById('jumlah').textContent = daftarData.length;
 }
 
-// ---------- Mode edit: isi form dengan data yang dipilih ----------
 function mulaiEdit(row) {
     document.getElementById('id_edit').value = row.id;
     document.getElementById('nama_tempat').value = row.nama_tempat;
-    document.getElementById('lokasi_mrt').value = row.lokasi_mrt;
-    document.getElementById('status_halal').value = row.status_halal; // dropdown otomatis terpilih
+    document.getElementById('status_halal').value = row.status_halal;
     document.getElementById('catatan').value = row.catatan;
 
     document.getElementById('judulForm').textContent = 'Edit Rencana Kuliner Halal';
@@ -85,7 +77,6 @@ function mulaiEdit(row) {
     window.scrollTo(0, 0);
 }
 
-// Kembalikan form ke mode "tambah"
 function selesaiEdit() {
     document.getElementById('formMakanan').reset();
     document.getElementById('id_edit').value = '';
@@ -94,7 +85,6 @@ function selesaiEdit() {
     document.getElementById('tombolBatal').classList.add('sembunyi');
 }
 
-// ---------- DELETE: lewat POST + konfirmasi ----------
 async function hapusData(row) {
     if (!window.confirm('Hapus rencana "' + row.nama_tempat + '"?')) {
         return;
@@ -105,7 +95,6 @@ async function hapusData(row) {
     }
     tampilPesan(hasil.pesan, hasil.sukses ? 'sukses' : 'error');
     if (hasil.sukses) {
-        // Kalau data yang sedang diedit ikut terhapus, tutup mode edit
         if (document.getElementById('id_edit').value === String(row.id)) {
             selesaiEdit();
         }
@@ -119,7 +108,6 @@ document.addEventListener('DOMContentLoaded', async function () {
         return;
     }
 
-    // ---------- CREATE / UPDATE: simpan form ----------
     document.getElementById('formMakanan').addEventListener('submit', async function (e) {
         e.preventDefault();
 
@@ -133,7 +121,6 @@ document.addEventListener('DOMContentLoaded', async function () {
             aksi: 'simpan',
             id: document.getElementById('id_edit').value,
             nama_tempat: document.getElementById('nama_tempat').value.trim(),
-            lokasi_mrt: document.getElementById('lokasi_mrt').value.trim(),
             status_halal: document.getElementById('status_halal').value,
             catatan: document.getElementById('catatan').value.trim()
         });

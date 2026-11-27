@@ -72,6 +72,16 @@ function wajibLogin()
     return (int) $_SESSION['user_id'];
 }
 
+// Endpoint khusus Administrator. Memastikan user sudah login DAN ber-role 'admin'.
+function wajibAdmin()
+{
+    $user_id = wajibLogin();
+    if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
+        gagal('Akses ditolak. Halaman ini khusus Administrator.', 403);
+    }
+    return $user_id;
+}
+
 // Ambil nilai teks dari $_POST (dibuang spasi di pinggir). Kalau bukan teks, dianggap kosong.
 function ambilPost($kunci)
 {

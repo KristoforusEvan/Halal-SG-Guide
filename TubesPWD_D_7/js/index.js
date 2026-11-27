@@ -1,11 +1,10 @@
 // ============================================================
 // index.js - homepage publik: pencarian + kartu tempat
-// Klik kartu: jika belum login -> login.xhtml; jika sudah -> detail.xhtml?id=...
+// Tamu tetap bisa melihat katalog homepage; klik kartu detail wajib login.
 // ============================================================
 
-var sesiAktif = null; // menyimpan objek sesi jika sudah login, null jika tamu
+var sesiAktif = null;
 
-// Gambar kartu-kartu tempat ke dalam <div id="gridTempat">
 function tampilKartu(daftar) {
     var grid = document.getElementById('gridTempat');
     kosongkan(grid);
@@ -13,7 +12,7 @@ function tampilKartu(daftar) {
     for (var i = 0; i < daftar.length; i++) {
         (function (t) {
             var kartu = buatElemen('div', '', 'kartu-tempat');
-            kartu.setAttribute('title', sesiAktif ? 'Klik untuk melihat deskripsi detail' : 'Login terlebih dahulu untuk melihat detail');
+            kartu.setAttribute('title', sesiAktif ? 'Klik untuk melihat deskripsi detail' : 'Login terlebih dahulu untuk melihat selengkapnya');
 
             // Kotak gambar
             var gambar = buatElemen('div', '', 'kartu-gambar kat-' + t.kategori);
@@ -28,15 +27,15 @@ function tampilKartu(daftar) {
             var isi = buatElemen('div', '', 'kartu-isi');
             isi.appendChild(buatElemen('span', t.status, 'badge-halal'));
             isi.appendChild(buatElemen('h3', t.nama));
-            isi.appendChild(buatElemen('p', t.area_mrt, 'kartu-mrt'));
+            isi.appendChild(buatElemen('p', t.area + ' • ' + t.harga_estimasi, 'kartu-area'));
             isi.appendChild(buatElemen('p', t.keterangan));
 
-            var teksCta = sesiAktif ? 'Lihat detail tempat \u2192' : 'Login untuk lihat detail \u2192';
+            var teksCta = sesiAktif ? 'Lihat selengkapnya \u2192' : 'Login untuk lihat selengkapnya \u2192';
             isi.appendChild(buatElemen('p', teksCta, 'kartu-cta'));
 
             kartu.appendChild(isi);
 
-            // Aksi saat kartu tempat diklik
+            // Saat kartu diklik: tamu diarahkan ke login, user login ke detail
             kartu.addEventListener('click', function () {
                 if (!sesiAktif) {
                     window.location.href = 'login.xhtml';
@@ -50,11 +49,11 @@ function tampilKartu(daftar) {
     }
 }
 
-// Ambil hasil pencarian dari server lalu tampilkan
 async function cariTempat() {
     var q = document.getElementById('q').value.trim();
     var kategori = document.getElementById('kategori').value;
-    var url = 'api/tempat.php?q=' + encodeURIComponent(q) + '&kategori=' + encodeURIComponent(kategori);
+    var harga = document.getElementById('harga').value;
+    var url = 'api/tempat.php?q=' + encodeURIComponent(q) + '&kategori=' + encodeURIComponent(kategori) + '&harga=' + encodeURIComponent(harga);
 
     var hasil = await panggilApi(url);
     if (!hasil.sukses) {
@@ -75,12 +74,11 @@ async function cariTempat() {
 document.addEventListener('DOMContentLoaded', async function () {
     sesiAktif = await siapkanHalaman('bebas');
 
-    // Sapaan hanya muncul kalau sudah login
     if (sesiAktif) {
         var sapaan = document.getElementById('sapaan');
         sapaan.appendChild(document.createTextNode('Halo, '));
         sapaan.appendChild(buatElemen('strong', sesiAktif.nama));
-        sapaan.appendChild(document.createTextNode('!'));
+        sapaan.appendChild(document.createTextNode('! Selamat merencanakan perjalanan halal Anda di Singapura.'));
     }
 
     document.getElementById('formCari').addEventListener('submit', function (e) {

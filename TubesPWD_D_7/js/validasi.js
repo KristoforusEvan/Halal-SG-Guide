@@ -1,21 +1,17 @@
 // ============================================================
-// validasi.js - validasi form di sisi browser (aturannya disamakan
-// dengan fungsi validasi di api/fungsi.php).
-// Setiap fn_ValXxx() mengembalikan ARRAY teks error. Array kosong = valid.
+// validasi.js - validasi form di sisi browser
 // ============================================================
 
-var POLA_NAMA = /^[a-zA-Z ]+$/;                 // huruf dan spasi saja
-var POLA_EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;  // format email sederhana
-var POLA_USERNAME = /^[a-zA-Z0-9_]{3,30}$/;     // 3-30 huruf/angka/underscore
-var MIN_PASSWORD = 8;                           // password minimal 8 karakter
+var POLA_NAMA = /^[a-zA-Z ]+$/;
+var POLA_EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+var POLA_USERNAME = /^[a-zA-Z0-9_]{3,30}$/;
+var MIN_PASSWORD = 8;
 
-// Ambil nilai sebuah field berdasarkan id (string kosong kalau field tidak ada)
 function nilai(id) {
     var el = document.getElementById(id);
     return el ? el.value : '';
 }
 
-// Hapus pesan saat pengguna mulai mengetik/mengubah isian lagi
 document.addEventListener('DOMContentLoaded', function () {
     var kolom = document.querySelectorAll('input, select, textarea');
     for (var i = 0; i < kolom.length; i++) {
@@ -25,7 +21,6 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 });
 
-// Validasi form register: cukup username, email, dan password
 function fn_ValRegister() {
     var daftarError = [];
     var username = nilai('username').trim();
@@ -52,7 +47,6 @@ function fn_ValRegister() {
     return daftarError;
 }
 
-// Validasi form login: cukup email dan password
 function fn_ValLogin() {
     var daftarError = [];
     var email = nilai('email').trim().toLowerCase();
@@ -70,7 +64,6 @@ function fn_ValLogin() {
     return daftarError;
 }
 
-// Validasi form profil: username & email wajib; nama lengkap dan asal kota opsional
 function fn_ValProfil() {
     var daftarError = [];
     var username = nilai('username').trim();
@@ -95,14 +88,10 @@ function fn_ValProfil() {
     return daftarError;
 }
 
-// Validasi form rencana makanan
 function fn_ValMakanan() {
     var daftarError = [];
     if (nilai('nama_tempat').trim() === '') {
         daftarError.push('Nama restoran/kedai wajib diisi.');
-    }
-    if (nilai('lokasi_mrt').trim() === '') {
-        daftarError.push('Lokasi / stasiun MRT terdekat wajib diisi.');
     }
     if (nilai('catatan').trim() === '') {
         daftarError.push('Catatan menu/sumber verifikasi wajib diisi.');
@@ -110,7 +99,6 @@ function fn_ValMakanan() {
     return daftarError;
 }
 
-// Validasi form jadwal masjid
 function fn_ValMasjid() {
     var daftarError = [];
     if (nilai('nama_masjid').trim() === '') {

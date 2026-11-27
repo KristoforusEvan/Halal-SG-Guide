@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="id" lang="id">
+<head>
+    <meta http-equiv="Content-Type" content="application/xhtml+xml; charset=UTF-8" />
+    <title>Dashboard Admin - Halal SG Guide</title>
+    <link rel="stylesheet" type="text/css" href="css/style.css?v=9" />
+    <script type="text/javascript" src="js/umum.js?v=9"></script>
+    <script type="text/javascript" src="js/validasi.js?v=9"></script>
+    <script type="text/javascript" src="js/admin.js?v=9"></script>
+</head>
+<body>
+    <div id="header">
+        <h1>Halal SG Guide - Dashboard Administrator</h1>
+        <p>Kelola konten wisata halal, kuliner, masjid, dan manajemen akun pengguna</p>
+    </div>
+
+    <!-- Navbar Sticky -->
+    <div id="nav"></div>
+
+    <div class="container">
+        <h2 id="judulFormKonten">Tambah Konten Tempat (Homepage)</h2>
+        <div id="pesan"></div>
+
+        <div class="card-form">
+            <form id="formKonten" action="api/tempat.php" method="post">
+                <div><input type="hidden" id="id_konten" name="id" value="" /></div>
+                <div class="form-group">
+                    <label for="nama">Nama Tempat / Restoran / Masjid</label>
+                    <input type="text" id="nama" name="nama" />
+                </div>
+                <div class="form-group">
+                    <label for="kategori">Kategori Konten</label>
+                    <select id="kategori" name="kategori">
+                        <option value="wisata">Destinasi Wisata</option>
+                        <option value="kuliner">Kuliner Halal</option>
+                        <option value="masjid">Ibadah / Masjid</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="area">Area / Kawasan Singapura</label>
+                    <input type="text" id="area" name="area" />
+                </div>
+                <div class="form-group">
+                    <label for="harga_estimasi">Estimasi Biaya (contoh: Gratis atau SGD 8 - 15)</label>
+                    <input type="text" id="harga_estimasi" name="harga_estimasi" />
+                </div>
+                <div class="form-group">
+                    <label for="status">Badge Status (contoh: Sertifikat Halal MUIS / Masjid / Destinasi Wisata)</label>
+                    <input type="text" id="status" name="status" />
+                </div>
+                <div class="form-group">
+                    <label for="jam_buka">Jam Operasional</label>
+                    <input type="text" id="jam_buka" name="jam_buka" />
+                </div>
+                <div class="form-group">
+                    <label for="alamat">Alamat Lengkap</label>
+                    <input type="text" id="alamat" name="alamat" />
+                </div>
+                <div class="form-group">
+                    <label for="foto">Nama File Foto di folder img/</label>
+                    <select id="foto" name="foto">
+                        <option value="bg-singapore.jpg">bg-singapore.jpg (Umum / Wisata)</option>
+                        <option value="zam-zam.jpg">zam-zam.jpg</option>
+                        <option value="hajah-maimunah.jpg">hajah-maimunah.jpg</option>
+                        <option value="encik-tan.jpg">encik-tan.jpg</option>
+                        <option value="masjid-sultan.jpg">masjid-sultan.jpg</option>
+                        <option value="masjid-alfalah.jpg">masjid-alfalah.jpg</option>
+                        <option value="masjid-jamae.jpg">masjid-jamae.jpg</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="keterangan">Ringkasan Singkat (Tampil di Kartu Homepage)</label>
+                    <input type="text" id="keterangan" name="keterangan" />
+                </div>
+                <div class="form-group">
+                    <label for="deskripsi">Deskripsi Lengkap (Tampil di Halaman Detail)</label>
+                    <textarea id="deskripsi" name="deskripsi" rows="4" cols="30"></textarea>
+                </div>
+                <div>
+                    <input type="submit" id="tombolSimpanKonten" class="btn" value="Simpan Konten" />
+                    <input type="button" id="tombolBatalKonten" class="btn btn-batal sembunyi" value="Batal Edit" />
+                </div>
+            </form>
+        </div>
+
+        <h2>Daftar Konten Aktif (<span id="jumlahKonten">0</span> tempat)</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>No</th>
+                    <th>Nama Tempat</th>
+                    <th>Kategori</th>
+                    <th>Area</th>
+                    <th>Biaya</th>
+                    <th>Aksi</th>
+                </tr>
+            </thead>
+            <tbody id="tabelKonten"></tbody>
+        </table>
+
+        <h2 style="margin-top: 40px;">Manajemen Akun Pengguna (<span id="jumlahUser">0</span> akun)</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>No</th>
+                    <th>Username</th>
+                    <th>Email</th>
+                    <th>Nama Lengkap</th>
+                    <th>Role</th>
+                    <th>Aksi</th>
+                </tr>
+            </thead>
+            <tbody id="tabelUser"></tbody>
+        </table>
+    </div>
+</body>
+</html>
