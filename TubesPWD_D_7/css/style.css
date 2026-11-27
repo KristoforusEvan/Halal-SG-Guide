@@ -36,7 +36,7 @@ body {
 .auth-left {
     width: 50%;
     background: linear-gradient(160deg, rgba(11, 94, 66, 0.86) 0%, rgba(6, 59, 41, 0.92) 100%),
-                url('../img/bg-singapore.jpg') center/cover no-repeat;
+        url('../img/bg-singapore.jpg') center/cover no-repeat;
     color: #ffffff;
     padding: 40px 35px;
     display: flex;
@@ -211,7 +211,7 @@ body {
 /* ================= HALAMAN UTAMA / DASHBOARD ================= */
 #header {
     background: linear-gradient(135deg, rgba(11, 94, 66, 0.92) 0%, rgba(6, 59, 41, 0.95) 100%),
-                url('../img/bg-singapore.jpg') center/cover no-repeat;
+        url('../img/bg-singapore.jpg') center/cover no-repeat;
     color: #ffffff;
     padding: 32px 20px;
     text-align: center;
@@ -432,8 +432,13 @@ tr:hover td {
     background-color: #d8ecdf;
 }
 
-.kartu-gambar.kat-masjid { background-color: #f6ecc8; }
-.kartu-gambar.kat-wisata { background-color: #dbe7f5; }
+.kartu-gambar.kat-masjid {
+    background-color: #f6ecc8;
+}
+
+.kartu-gambar.kat-wisata {
+    background-color: #dbe7f5;
+}
 
 .kartu-gambar img {
     width: 100%;
@@ -481,7 +486,9 @@ tr:hover td {
 }
 
 /* ===== TAMBAHAN UTILITAS ===== */
-.sembunyi { display: none; }
+.sembunyi {
+    display: none;
+}
 
 .tombol-teks {
     background: none;
@@ -491,14 +498,20 @@ tr:hover td {
     font-size: 13px;
     cursor: pointer;
 }
-.tombol-teks:hover { text-decoration: underline; }
+
+.tombol-teks:hover {
+    text-decoration: underline;
+}
 
 .btn.btn-batal {
     margin-left: 8px;
     background: #6b7c74;
     box-shadow: none;
 }
-.btn.btn-batal:hover { background: #55655e; }
+
+.btn.btn-batal:hover {
+    background: #55655e;
+}
 
 .form-hint {
     font-size: 12px;
@@ -506,7 +519,9 @@ tr:hover td {
     margin: 4px 0 0 0;
 }
 
-#pesan p { margin: 0 0 14px 0; }
+#pesan p {
+    margin: 0 0 14px 0;
+}
 
 /* ===== HALAMAN DETAIL TEMPAT ===== */
 .detail-card {
