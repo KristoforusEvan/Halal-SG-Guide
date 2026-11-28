@@ -45,20 +45,15 @@ if ($aksi === 'hapus') {
 
 // ---------- CREATE / UPDATE ----------
 if ($aksi === 'simpan') {
-    $id             = ambilPost('id');
-    $nama_masjid    = ambilPost('nama_masjid');
-    $area_singapura = ambilPost('area_singapura');
-    $waktu_sholat   = ambilPost('waktu_sholat');
-    $keterangan     = ambilPost('keterangan');
+    $id           = ambilPost('id');
+    $nama_masjid  = ambilPost('nama_masjid');
+    $waktu_sholat = ambilPost('waktu_sholat');
 
-    if ($nama_masjid === '' || $area_singapura === '' || $waktu_sholat === '' || $keterangan === '') {
-        gagal('Harap lengkapi semua data jadwal masjid.');
+    if ($nama_masjid === '' || $waktu_sholat === '') {
+        gagal('Harap lengkapi nama masjid dan waktu sholat.');
     }
-    if (strlen($nama_masjid) > 100 || strlen($area_singapura) > 100) {
-        gagal('Nama masjid dan area maksimal 100 karakter.');
-    }
-    if (strlen($keterangan) > 255) {
-        gagal('Keterangan maksimal 255 karakter.');
+    if (strlen($nama_masjid) > 100) {
+        gagal('Nama masjid maksimal 100 karakter.');
     }
     if (!in_array($waktu_sholat, $daftarWaktu, true)) {
         gagal('Waktu sholat tidak valid.');
@@ -75,15 +70,16 @@ if ($aksi === 'simpan') {
         if (mysqli_num_rows(mysqli_stmt_get_result($cek)) !== 1) {
             gagal('Data tidak ditemukan.', 404);
         }
-        $upd = mysqli_prepare($conn, 'UPDATE jadwal_masjid SET nama_masjid = ?, area_singapura = ?, waktu_sholat = ?, keterangan = ? WHERE id = ? AND user_id = ?');
-        mysqli_stmt_bind_param($upd, 'ssssii', $nama_masjid, $area_singapura, $waktu_sholat, $keterangan, $id, $user_id);
+        $upd = mysqli_prepare($conn, 'UPDATE jadwal_masjid SET nama_masjid = ?, waktu_sholat = ? WHERE id = ? AND user_id = ?');
+        mysqli_stmt_bind_param($upd, 'ssii', $nama_masjid, $waktu_sholat, $id, $user_id);
         mysqli_stmt_execute($upd);
         berhasil('Jadwal kunjungan masjid berhasil diperbarui.');
     }
 
     // CREATE
+    $kosong = '';
     $ins = mysqli_prepare($conn, 'INSERT INTO jadwal_masjid (user_id, nama_masjid, area_singapura, waktu_sholat, keterangan) VALUES (?, ?, ?, ?, ?)');
-    mysqli_stmt_bind_param($ins, 'issss', $user_id, $nama_masjid, $area_singapura, $waktu_sholat, $keterangan);
+    mysqli_stmt_bind_param($ins, 'issss', $user_id, $nama_masjid, $kosong, $waktu_sholat, $kosong);
     mysqli_stmt_execute($ins);
     berhasil('Jadwal kunjungan masjid berhasil ditambahkan.');
 }

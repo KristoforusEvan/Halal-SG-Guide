@@ -10,7 +10,7 @@ $userId = (int) $_SESSION['user_id'];
 
 // ---------- GET: AMBIL DATA PROFIL ----------
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-    $stmt = mysqli_prepare($conn, 'SELECT id, username, email, nama, asal_kota, role, foto FROM users WHERE id = ?');
+    $stmt = mysqli_prepare($conn, 'SELECT id, username, email, nama, asal_kota, role, foto_profil AS foto FROM users WHERE id = ?');
     mysqli_stmt_bind_param($stmt, 'i', $userId);
     mysqli_stmt_execute($stmt);
     $row = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt));
@@ -42,11 +42,11 @@ if (strlen($nama) > 100 || strlen($asalKota) > 100) {
 }
 
 // Ambil foto lama dari database
-$qLama = mysqli_prepare($conn, 'SELECT foto FROM users WHERE id = ?');
+$qLama = mysqli_prepare($conn, 'SELECT foto_profil FROM users WHERE id = ?');
 mysqli_stmt_bind_param($qLama, 'i', $userId);
 mysqli_stmt_execute($qLama);
 $dataLama = mysqli_fetch_assoc(mysqli_stmt_get_result($qLama));
-$fotoAktif = ($dataLama && !empty($dataLama['foto'])) ? basename($dataLama['foto']) : 'bg-singapore.jpg';
+$fotoAktif = ($dataLama && !empty($dataLama['foto_profil'])) ? basename($dataLama['foto_profil']) : 'bg-singapore.jpg';
 
 // Cek duplikasi username / email milik user lain
 $cek = mysqli_prepare($conn, 'SELECT id FROM users WHERE (username = ? OR email = ?) AND id <> ?');
@@ -103,7 +103,7 @@ if (isset($_FILES['foto_profil']) && $_FILES['foto_profil']['error'] !== UPLOAD_
     $fotoAktif = $namaFileBaru;
 }
 
-$upd = mysqli_prepare($conn, 'UPDATE users SET username = ?, email = ?, nama = ?, asal_kota = ?, foto = ? WHERE id = ?');
+$upd = mysqli_prepare($conn, 'UPDATE users SET username = ?, email = ?, nama = ?, asal_kota = ?, foto_profil = ? WHERE id = ?');
 mysqli_stmt_bind_param($upd, 'sssssi', $username, $email, $nama, $asalKota, $fotoAktif, $userId);
 mysqli_stmt_execute($upd);
 

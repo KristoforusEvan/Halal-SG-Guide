@@ -74,7 +74,7 @@ function mulaiEdit(row) {
     document.getElementById('tombolSimpan').value = 'Perbarui Rencana Kuliner';
     document.getElementById('tombolBatal').classList.remove('sembunyi');
     tampilPesan('');
-    window.scrollTo(0, 0);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 function selesaiEdit() {
@@ -106,6 +106,12 @@ document.addEventListener('DOMContentLoaded', async function () {
     var sesi = await siapkanHalaman('privat');
     if (!sesi) {
         return;
+    }
+
+    var params = new URLSearchParams(window.location.search);
+    var namaDariDetail = params.get('nama');
+    if (namaDariDetail) {
+        document.getElementById('nama_tempat').value = namaDariDetail;
     }
 
     document.getElementById('formMakanan').addEventListener('submit', async function (e) {

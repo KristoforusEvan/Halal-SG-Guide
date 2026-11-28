@@ -154,10 +154,10 @@ document.addEventListener('DOMContentLoaded', async function () {
 
     var tombolCatat = document.getElementById('tombolCatat');
     if (t.kategori === 'kuliner') {
-        tombolCatat.setAttribute('href', 'makanan.xhtml');
+        tombolCatat.setAttribute('href', 'makanan.xhtml?nama=' + encodeURIComponent(t.nama));
         tombolCatat.textContent = '+ Catat ke Rencana Kuliner';
     } else if (t.kategori === 'masjid') {
-        tombolCatat.setAttribute('href', 'masjid.xhtml');
+        tombolCatat.setAttribute('href', 'masjid.xhtml?nama=' + encodeURIComponent(t.nama));
         tombolCatat.textContent = '+ Jadwalkan ke Kunjungan Masjid';
     } else {
         tombolCatat.classList.add('sembunyi');

@@ -104,11 +104,79 @@ function fn_ValMasjid() {
     if (nilai('nama_masjid').trim() === '') {
         daftarError.push('Nama masjid wajib diisi.');
     }
-    if (nilai('area_singapura').trim() === '') {
-        daftarError.push('Area Singapura wajib diisi.');
+    return daftarError;
+}
+
+function fn_ValKonten() {
+    var daftarError = [];
+    var nama = nilai('nama').trim();
+    var area = nilai('area').trim();
+    var harga = nilai('harga_estimasi').trim();
+    var lat = nilai('lat').trim();
+    var lng = nilai('lng').trim();
+    var status = nilai('status').trim();
+    var jamBuka = nilai('jam_buka').trim();
+    var alamat = nilai('alamat').trim();
+    var keterangan = nilai('keterangan').trim();
+    var deskripsi = nilai('deskripsi').trim();
+
+    if (nama === '') {
+        daftarError.push('Nama tempat wajib diisi.');
     }
-    if (nilai('keterangan').trim() === '') {
-        daftarError.push('Keterangan jadwal wajib diisi.');
+    if (area === '') {
+        daftarError.push('Area / kawasan Singapura wajib diisi.');
     }
+    if (harga === '') {
+        daftarError.push('Estimasi biaya wajib diisi (tulis "Gratis" jika tidak berbayar).');
+    }
+    if (lat !== '' && isNaN(Number(lat))) {
+        daftarError.push('Koordinat Latitude harus berupa angka desimal (contoh: 1.3023).');
+    }
+    if (lng !== '' && isNaN(Number(lng))) {
+        daftarError.push('Koordinat Longitude harus berupa angka desimal (contoh: 103.8589).');
+    }
+    if (status === '') {
+        daftarError.push('Badge status wajib diisi.');
+    }
+    if (jamBuka === '') {
+        daftarError.push('Jam operasional wajib diisi.');
+    }
+    if (alamat === '') {
+        daftarError.push('Alamat lengkap wajib diisi.');
+    }
+    if (keterangan === '') {
+        daftarError.push('Ringkasan singkat wajib diisi.');
+    }
+    if (deskripsi === '') {
+        daftarError.push('Deskripsi lengkap wajib diisi.');
+    }
+
+    var tipeValid = ['image/jpeg', 'image/png', 'image/webp'];
+    var batasUkuran = 2 * 1024 * 1024; // 2 MB
+
+    var inputFoto = document.getElementById('foto_file');
+    if (inputFoto && inputFoto.files && inputFoto.files[0]) {
+        var fileUtama = inputFoto.files[0];
+        if (tipeValid.indexOf(fileUtama.type) === -1) {
+            daftarError.push('Foto utama harus berformat JPG, PNG, atau WEBP.');
+        } else if (fileUtama.size > batasUkuran) {
+            daftarError.push('Ukuran foto utama maksimal 2 MB.');
+        }
+    }
+
+    var inputGaleri = document.getElementById('foto_galeri');
+    if (inputGaleri && inputGaleri.files) {
+        for (var i = 0; i < inputGaleri.files.length; i++) {
+            var fileSlide = inputGaleri.files[i];
+            if (tipeValid.indexOf(fileSlide.type) === -1) {
+                daftarError.push('Semua foto galeri harus berformat JPG, PNG, atau WEBP.');
+                break;
+            } else if (fileSlide.size > batasUkuran) {
+                daftarError.push('Ukuran setiap foto galeri maksimal 2 MB.');
+                break;
+            }
+        }
+    }
+
     return daftarError;
 }

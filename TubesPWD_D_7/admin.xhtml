@@ -1,15 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="id" lang="id">
+
 <head>
     <meta http-equiv="Content-Type" content="application/xhtml+xml; charset=UTF-8" />
     <title>Dashboard Admin - Halal SG Guide</title>
     <link rel="stylesheet" type="text/css" href="css/style.css?v=18" />
     <script type="text/javascript" src="js/umum.js?v=18"></script>
-    <script type="text/javascript" src="js/validasi.js?v=18"></script>
+    <script type="text/javascript" src="js/validasi.js?v=19"></script>
     <script type="text/javascript" src="js/admin.js?v=18"></script>
 </head>
+
 <body>
     <div id="header">
         <h1>Halal SG Guide - Dashboard Administrator</h1>
@@ -46,12 +47,16 @@
                     <label for="foto_file">Upload Foto Utama Tempat (JPG, PNG, atau WEBP - Maksimal 2 MB)</label>
                     <input type="hidden" id="foto_lama" name="foto_lama" value="" />
                     <input type="file" id="foto_file" name="foto_file" accept="image/jpeg,image/png,image/webp" />
-                    <p id="infoFotoSaatIni" class="form-hint">Opsional: jika dikosongkan saat tambah baru, otomatis memakai bg-singapore.jpg.</p>
+                    <p id="infoFotoSaatIni" class="form-hint">Opsional: jika dikosongkan saat tambah baru, otomatis
+                        memakai bg-singapore.jpg.</p>
                 </div>
                 <div class="form-group">
-                    <label for="foto_galeri">Tambah Foto Variasi / Galeri Slide (Opsional - Bisa Pilih Banyak Sekaligus)</label>
-                    <input type="file" id="foto_galeri" name="foto_galeri[]" multiple="multiple" accept="image/jpeg,image/png,image/webp" />
-                    <p class="form-hint">Tahan tombol Ctrl saat memilih file untuk mengunggah beberapa foto tambahan sekaligus (maksimal 2 MB per foto).</p>
+                    <label for="foto_galeri">Tambah Foto Variasi / Galeri Slide (Opsional - Bisa Pilih Banyak
+                        Sekaligus)</label>
+                    <input type="file" id="foto_galeri" name="foto_galeri[]" multiple="multiple"
+                        accept="image/jpeg,image/png,image/webp" />
+                    <p class="form-hint">Tahan tombol Ctrl saat memilih file untuk mengunggah beberapa foto tambahan
+                        sekaligus (maksimal 2 MB per foto).</p>
                 </div>
                 <div class="form-group">
                     <label for="harga_estimasi">Estimasi Biaya (contoh: Gratis atau SGD 8 - 15)</label>
@@ -123,4 +128,5 @@
         </table>
     </div>
 </body>
+
 </html>
