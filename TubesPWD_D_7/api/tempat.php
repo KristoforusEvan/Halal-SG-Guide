@@ -173,7 +173,6 @@ if ($aksi === 'simpan') {
     );
     $folderTujuan = dirname(__DIR__) . DIRECTORY_SEPARATOR . 'img';
 
-    // 1. Proses unggah foto utama jika dipilih
     if (isset($_FILES['foto_file']) && $_FILES['foto_file']['error'] !== UPLOAD_ERR_NO_FILE) {
         $file = $_FILES['foto_file'];
         if ($file['error'] !== UPLOAD_ERR_OK || $file['size'] > 2 * 1024 * 1024) {
