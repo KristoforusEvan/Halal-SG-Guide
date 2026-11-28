@@ -1,5 +1,4 @@
 <?php
-// logout.php (POST) - hapus session. Pakai POST supaya tidak bisa dipicu lewat link/gambar dari situs lain.
 require 'fungsi.php';
 
 wajibPost();

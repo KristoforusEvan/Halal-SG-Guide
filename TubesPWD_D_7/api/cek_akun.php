@@ -1,5 +1,4 @@
 <?php
-// cek_akun.php (GET) - mengecek ketersediaan username atau email secara real-time saat registrasi
 require 'fungsi.php';
 require 'koneksi.php';
 

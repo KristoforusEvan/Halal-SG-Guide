@@ -1,5 +1,4 @@
 <?php
-// session.php (GET) - mengecek status login dan mengirim role aktif ke frontend
 require 'fungsi.php';
 
 if (isset($_SESSION['user_id'])) {

@@ -1,7 +1,3 @@
-// ============================================================
-// register.js - registrasi + deteksi username/email terpakai real-time (Bonus 3)
-// ============================================================
-
 var usernameTersedia = true;
 var emailTersedia = true;
 

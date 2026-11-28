@@ -1,9 +1,4 @@
 <?php
-// masjid.php  -  CRUD 2: jadwal kunjungan masjid (milik tiap user)
-//   GET                      -> daftar (Read)
-//   POST aksi=simpan         -> tambah (Create) kalau id kosong, ubah (Update) kalau id ada
-//   POST aksi=hapus          -> hapus (Delete)
-// Semua query memakai prepared statement + cek user_id.
 require 'fungsi.php';
 require 'koneksi.php';
 
@@ -12,7 +7,6 @@ $user_id = wajibLogin();
 // Pilihan yang valid untuk dropdown waktu sholat (dicek juga di server)
 $daftarWaktu = array('Dzuhur & Ashar (Jamak)', 'Maghrib & Isya (Jamak)', 'Sholat Jumat', 'Subuh');
 
-// ---------- READ ----------
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     $q = mysqli_prepare($conn, 'SELECT id, nama_masjid, area_singapura, waktu_sholat, keterangan FROM jadwal_masjid WHERE user_id = ? ORDER BY id DESC');
     mysqli_stmt_bind_param($q, 'i', $user_id);
@@ -28,7 +22,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
 wajibPost();
 $aksi = ambilPost('aksi');
 
-// ---------- DELETE ----------
 if ($aksi === 'hapus') {
     $id = ambilPost('id');
     if (!ctype_digit($id)) {
@@ -43,7 +36,6 @@ if ($aksi === 'hapus') {
     berhasil('Jadwal kunjungan masjid berhasil dihapus.');
 }
 
-// ---------- CREATE / UPDATE ----------
 if ($aksi === 'simpan') {
     $id           = ambilPost('id');
     $nama_masjid  = ambilPost('nama_masjid');
@@ -60,7 +52,6 @@ if ($aksi === 'simpan') {
     }
 
     if ($id !== '') {
-        // UPDATE: pastikan data memang milik user ini
         if (!ctype_digit($id)) {
             gagal('ID tidak valid.');
         }
@@ -76,7 +67,6 @@ if ($aksi === 'simpan') {
         berhasil('Jadwal kunjungan masjid berhasil diperbarui.');
     }
 
-    // CREATE
     $kosong = '';
     $ins = mysqli_prepare($conn, 'INSERT INTO jadwal_masjid (user_id, nama_masjid, area_singapura, waktu_sholat, keterangan) VALUES (?, ?, ?, ?, ?)');
     mysqli_stmt_bind_param($ins, 'issss', $user_id, $nama_masjid, $kosong, $waktu_sholat, $kosong);

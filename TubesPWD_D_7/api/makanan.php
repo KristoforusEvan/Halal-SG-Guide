@@ -1,5 +1,4 @@
 <?php
-// makanan.php  -  CRUD 1: rencana kuliner halal (milik tiap user)
 require 'fungsi.php';
 require 'koneksi.php';
 
@@ -7,7 +6,6 @@ $user_id = wajibLogin();
 
 $daftarStatus = array('Sertifikat Halal MUIS', 'Muslim-Owned (Pemilik Muslim)', 'No Pork No Lard');
 
-// ---------- READ ----------
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     $q = mysqli_prepare($conn, 'SELECT id, nama_tempat, status_halal, catatan FROM rencana_makanan WHERE user_id = ? ORDER BY id DESC');
     mysqli_stmt_bind_param($q, 'i', $user_id);
@@ -23,7 +21,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
 wajibPost();
 $aksi = ambilPost('aksi');
 
-// ---------- DELETE ----------
 if ($aksi === 'hapus') {
     $id = ambilPost('id');
     if (!ctype_digit($id)) {
@@ -38,7 +35,6 @@ if ($aksi === 'hapus') {
     berhasil('Data rencana kuliner berhasil dihapus.');
 }
 
-// ---------- CREATE / UPDATE ----------
 if ($aksi === 'simpan') {
     $id           = ambilPost('id');
     $nama_tempat  = ambilPost('nama_tempat');

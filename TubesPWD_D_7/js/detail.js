@@ -1,7 +1,3 @@
-// ============================================================
-// detail.js - halaman detail privat + Carousel Gambar Auto-Slide
-// ============================================================
-
 var timerSlide = null;
 
 function buatCarouselGambar(wadah, daftarFoto, namaTempat) {
@@ -22,17 +18,14 @@ function buatCarouselGambar(wadah, daftarFoto, namaTempat) {
     img.className = 'carousel-img';
     wrap.appendChild(img);
 
-    // Jika gambar hanya 1, tampilkan tanpa panah dan tanpa auto-slide
     if (daftar.length <= 1) {
         wadah.appendChild(wrap);
         return;
     }
 
-    // Penghitung slide di pojok kanan atas (contoh: 1 / 3)
     var counter = buatElemen('span', '1 / ' + daftar.length, 'carousel-counter');
     wrap.appendChild(counter);
 
-    // Tombol panah kiri (<) dan kanan (>)
     var btnPrev = buatElemen('button', '\u2039', 'carousel-btn carousel-prev');
     btnPrev.setAttribute('type', 'button');
     btnPrev.setAttribute('title', 'Gambar sebelumnya');
@@ -44,7 +37,6 @@ function buatCarouselGambar(wadah, daftarFoto, namaTempat) {
     wrap.appendChild(btnPrev);
     wrap.appendChild(btnNext);
 
-    // Indikator titik (dots) di bagian bawah gambar
     var dotsWrap = buatElemen('div', '', 'carousel-dots');
     var daftarDot = [];
 
@@ -86,7 +78,6 @@ function buatCarouselGambar(wadah, daftarFoto, namaTempat) {
         if (timerSlide) {
             clearInterval(timerSlide);
         }
-        // Geser otomatis ke gambar berikutnya setiap 3.5 detik jika tidak diinteraksi
         timerSlide = setInterval(function () {
             pindahSlide(indeksAktif + 1);
         }, 3500);
@@ -109,7 +100,6 @@ function buatCarouselGambar(wadah, daftarFoto, namaTempat) {
         mulaiAutoSlide();
     });
 
-    // Jeda auto-slide saat kursor diarahkan ke gambar agar user nyaman melihat
     wrap.addEventListener('mouseenter', hentikanAutoSlide);
     wrap.addEventListener('mouseleave', mulaiAutoSlide);
 

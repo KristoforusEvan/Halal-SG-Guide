@@ -1,7 +1,3 @@
-// ============================================================
-// makanan.js - CRUD 1: rencana kuliner halal (wajib login)
-// ============================================================
-
 var daftarData = [];
 
 async function muatDaftar() {

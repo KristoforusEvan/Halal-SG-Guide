@@ -1,7 +1,3 @@
-// ============================================================
-// validasi.js - validasi form di sisi browser
-// ============================================================
-
 var POLA_NAMA = /^[a-zA-Z ]+$/;
 var POLA_EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 var POLA_USERNAME = /^[a-zA-Z0-9_]{3,30}$/;
@@ -152,7 +148,7 @@ function fn_ValKonten() {
     }
 
     var tipeValid = ['image/jpeg', 'image/png', 'image/webp'];
-    var batasUkuran = 2 * 1024 * 1024; // 2 MB
+    var batasUkuran = 2 * 1024 * 1024;
 
     var inputFoto = document.getElementById('foto_file');
     if (inputFoto && inputFoto.files && inputFoto.files[0]) {

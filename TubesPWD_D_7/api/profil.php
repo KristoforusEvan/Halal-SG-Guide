@@ -1,14 +1,10 @@
 <?php
-// profil.php
-//   GET  -> Ambil data profil user yang sedang login
-//   POST -> Perbarui username, email, nama, asal_kota, dan upload foto_profil
 require 'fungsi.php';
 require 'koneksi.php';
 
 wajibLogin();
 $userId = (int) $_SESSION['user_id'];
 
-// ---------- GET: AMBIL DATA PROFIL ----------
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     $stmt = mysqli_prepare($conn, 'SELECT id, username, email, nama, asal_kota, role, foto_profil AS foto FROM users WHERE id = ?');
     mysqli_stmt_bind_param($stmt, 'i', $userId);
@@ -23,7 +19,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     berhasil('', array('data' => $row));
 }
 
-// ---------- POST: UPDATE PROFIL & UPLOAD FOTO ----------
 wajibPost();
 
 $username = ambilPost('username');
@@ -41,14 +36,12 @@ if (strlen($nama) > 100 || strlen($asalKota) > 100) {
     gagal('Nama lengkap dan asal kota maksimal 100 karakter.');
 }
 
-// Ambil foto lama dari database
 $qLama = mysqli_prepare($conn, 'SELECT foto_profil FROM users WHERE id = ?');
 mysqli_stmt_bind_param($qLama, 'i', $userId);
 mysqli_stmt_execute($qLama);
 $dataLama = mysqli_fetch_assoc(mysqli_stmt_get_result($qLama));
 $fotoAktif = ($dataLama && !empty($dataLama['foto_profil'])) ? basename($dataLama['foto_profil']) : 'bg-singapore.jpg';
 
-// Cek duplikasi username / email milik user lain
 $cek = mysqli_prepare($conn, 'SELECT id FROM users WHERE (username = ? OR email = ?) AND id <> ?');
 mysqli_stmt_bind_param($cek, 'ssi', $username, $email, $userId);
 mysqli_stmt_execute($cek);
@@ -56,7 +49,6 @@ if (mysqli_fetch_assoc(mysqli_stmt_get_result($cek))) {
     gagal('Username atau email sudah digunakan akun lain.');
 }
 
-// Proses unggah foto profil baru jika dipilih
 if (isset($_FILES['foto_profil']) && $_FILES['foto_profil']['error'] !== UPLOAD_ERR_NO_FILE) {
     $file = $_FILES['foto_profil'];
 
@@ -92,7 +84,6 @@ if (isset($_FILES['foto_profil']) && $_FILES['foto_profil']['error'] !== UPLOAD_
         gagal('Gagal menyimpan file foto profil ke folder img/.', 500);
     }
 
-    // Hapus file foto profil lama jika bukan gambar bawaan
     if ($fotoAktif !== 'bg-singapore.jpg' && strpos($fotoAktif, 'profil_') === 0) {
         $pathLama = $folderTujuan . DIRECTORY_SEPARATOR . $fotoAktif;
         if (is_file($pathLama)) {

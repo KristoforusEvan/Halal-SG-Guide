@@ -1,18 +1,11 @@
 <?php
-// tempat.php
-//   GET tanpa ?id      -> Daftar & filter tempat untuk Homepage (PUBLIK)
-//   GET dengan ?id=... -> Detail 1 tempat beserta array galeri foto (PRIVAT, wajib login)
-//   POST aksi=simpan   -> Tambah / Edit konten tempat + Foto Utama + Banyak Foto Galeri (Admin)
-//   POST aksi=hapus    -> Hapus konten tempat (Admin)
 require 'fungsi.php';
 require 'koneksi.php';
 
 $daftarKategori = array('wisata', 'kuliner', 'masjid');
 
-// ---------- GET: READ DETAIL ATAU DAFTAR TEMPAT ----------
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
 
-    // Mode Detail 1 Tempat (WAJIB LOGIN)
     if (isset($_GET['id'])) {
         wajibLogin();
 
@@ -33,7 +26,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
         $fotoUtama = basename($row['foto']);
         $row['foto'] = $fotoUtama;
 
-        // Susun daftar galeri dimulai dari foto utama, lalu foto tambahan dari tabel tempat_galeri
         $galeri = array($fotoUtama);
         $qGal = mysqli_prepare($conn, 'SELECT foto FROM tempat_galeri WHERE tempat_id = ? ORDER BY id ASC');
         mysqli_stmt_bind_param($qGal, 'i', $id);
@@ -51,7 +43,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
         berhasil('', array('data' => $row));
     }
 
-    // Mode Daftar & Filter Homepage (PUBLIK)
     $keyword  = (isset($_GET['q']) && is_string($_GET['q'])) ? trim($_GET['q']) : '';
     $kategori = (isset($_GET['kategori']) && is_string($_GET['kategori'])) ? trim($_GET['kategori']) : '';
     $harga    = (isset($_GET['harga']) && is_string($_GET['harga'])) ? trim($_GET['harga']) : '';
@@ -103,7 +94,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     berhasil('', array('jumlah' => count($hasil), 'data' => $hasil));
 }
 
-// ---------- POST: KHUSUS ADMIN (CREATE / UPDATE / DELETE KONTEN) ----------
 wajibPost();
 wajibAdmin();
 
@@ -222,7 +212,6 @@ if ($aksi === 'simpan') {
         $targetTempatId = (int) mysqli_insert_id($conn);
     }
 
-    // 2. Proses unggah banyak foto galeri tambahan (foto_galeri[]) jika admin memilihnya
     if ($targetTempatId > 0 && isset($_FILES['foto_galeri']) && is_array($_FILES['foto_galeri']['name'])) {
         $jumlahFile = count($_FILES['foto_galeri']['name']);
         $finfo = finfo_open(FILEINFO_MIME_TYPE);

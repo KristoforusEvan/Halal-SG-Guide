@@ -1,13 +1,7 @@
-// ============================================================
-// index.js - homepage publik: pencarian, Geolocation + Haversine (Bonus 2),
-// dan pengalihan login saat kartu diklik untuk melihat detail.
-// ============================================================
-
 var sesiAktif = null;
 var daftarTempatSaatIni = [];
-var lokasiUser = null; // { lat: number, lng: number, label: string }
+var lokasiUser = null;
 
-// Titik koordinat referensi stasiun MRT / area populer Singapura untuk simulasi manual
 var TITIK_MRT_SINGAPURA = {
     bugis:       { lat: 1.3008, lng: 103.8561, label: 'Bugis MRT (EW12 / DT14)' },
     orchard:     { lat: 1.3048, lng: 103.8318, label: 'Orchard MRT (NS22)' },
@@ -17,7 +11,6 @@ var TITIK_MRT_SINGAPURA = {
     harbourfront:{ lat: 1.2654, lng: 103.8214, label: 'HarbourFront / Sentosa (NE1 / CC29)' }
 };
 
-// Rumus Haversine murni (menghitung jarak garis lurus antar 2 titik koordinat dalam kilometer)
 function hitungJarakKm(lat1, lon1, lat2, lon2) {
     var R = 6371;
     var dLat = (lat2 - lat1) * Math.PI / 180;
@@ -99,7 +92,6 @@ function tampilKartu(daftar) {
 
             kartu.appendChild(isi);
 
-            // Tamu diarahkan ke login dengan parameter redirect menuju halaman detail tempat ini
             kartu.addEventListener('click', function () {
                 var targetDetail = 'detail.xhtml?id=' + encodeURIComponent(t.id);
                 if (!sesiAktif) {

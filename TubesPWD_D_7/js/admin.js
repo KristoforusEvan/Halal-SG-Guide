@@ -1,7 +1,3 @@
-// ============================================================
-// admin.js - Dashboard Administrator (CRUD Konten + Upload Foto & Hapus Akun)
-// ============================================================
-
 var daftarKonten = [];
 var daftarUser = [];
 
@@ -12,7 +8,6 @@ function buatTombolAksi(teks, kelas, saatKlik) {
     return tombol;
 }
 
-// ---------- BAGIAN 1: CRUD KONTEN TEMPAT ----------
 async function muatKonten() {
     var hasil = await panggilApi('api/tempat.php');
     if (sesiHabis(hasil)) {
@@ -114,7 +109,6 @@ async function hapusKonten(row) {
     }
 }
 
-// ---------- BAGIAN 2: MANAJEMEN AKUN USER ----------
 async function muatUser() {
     var hasil = await panggilApi('api/admin_users.php');
     if (sesiHabis(hasil)) {
@@ -187,7 +181,6 @@ document.addEventListener('DOMContentLoaded', async function () {
             return;
         }
 
-        // Gunakan FormData agar data teks + file foto terkirim lewat multipart/form-data
         var formData = new FormData();
         formData.append('aksi', 'simpan');
         formData.append('id', document.getElementById('id_konten').value);

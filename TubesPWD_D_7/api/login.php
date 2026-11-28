@@ -1,5 +1,4 @@
 <?php
-// login.php (POST) - autentikasi email + password, menyimpan role ke $_SESSION
 require 'fungsi.php';
 require 'koneksi.php';
 
@@ -15,7 +14,6 @@ if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
     gagal('Format email tidak valid.');
 }
 
-// Ambil kolom role agar sistem bisa membedakan redirect admin vs user biasa
 $stmt = mysqli_prepare($conn, 'SELECT id, username, email, nama, password, role FROM users WHERE email = ?');
 mysqli_stmt_bind_param($stmt, 's', $email);
 mysqli_stmt_execute($stmt);

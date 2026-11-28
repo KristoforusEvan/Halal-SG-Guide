@@ -1,7 +1,3 @@
-// ============================================================
-// profil.js - Halaman Lihat & Update Profil + Upload Foto
-// ============================================================
-
 async function muatProfil() {
     var hasil = await panggilApi('api/profil.php');
     if (sesiHabis(hasil)) {
@@ -30,7 +26,6 @@ document.addEventListener('DOMContentLoaded', async function () {
 
     await muatProfil();
 
-    // Pratinjau langsung saat user memilih file gambar dari perangkat
     var inputFoto = document.getElementById('foto_profil');
     inputFoto.addEventListener('change', function () {
         if (inputFoto.files && inputFoto.files[0]) {

@@ -1,5 +1,4 @@
 <?php
-// Daftar tempat untuk homepage & halaman detail (dibaca oleh api/tempat.php).
 $daftarTempat = array(
     array(
         'id'         => 1,

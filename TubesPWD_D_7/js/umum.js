@@ -1,12 +1,7 @@
-// ============================================================
-// umum.js - fungsi bantu yang dipakai SEMUA halaman .xhtml
-// ============================================================
-
 async function panggilApi(url, data) {
     var opsi = { credentials: 'same-origin' };
     if (data !== undefined) {
         opsi.method = 'POST';
-        // Jika data berupa FormData (misal unggah foto profil), biarkan browser mengatur boundary multipart
         if (typeof FormData !== 'undefined' && data instanceof FormData) {
             opsi.body = data;
         } else {
@@ -127,11 +122,9 @@ function bangunNavbar(sesi) {
         tambahLink(nav, 'Daftar', 'register.xhtml');
     }
 
-    // 1. Panggil footer setelah navbar selesai dibuat
     bangunFooter();
 }
 
-// aturan: 'privat' (user/admin), 'admin' (khusus admin), 'tamu' (belum login), 'bebas' (siapa saja)
 async function siapkanHalaman(aturan) {
     var sesi = await ambilSesi();
     if (aturan === 'privat' && !sesi) {
@@ -156,9 +149,6 @@ async function siapkanHalaman(aturan) {
     return sesi;
 }
 
-// ============================================================
-// Scroll Progress Bar - indikator garis di paling atas layar
-// ============================================================
 function pasangScrollProgress() {
     if (document.getElementById('scrollProgressBar')) {
         return;
@@ -188,9 +178,6 @@ function pasangScrollProgress() {
 }
 
 
-// ============================================================
-// Footer Minimalis Modern (3 Kolom + Copyright)
-// ============================================================
 function bangunFooter() {
     if (document.getElementById('footerPortal')) {
         return;
@@ -201,10 +188,8 @@ function bangunFooter() {
 
     var container = buatElemen('div', '', 'footer-container');
 
-    // --- Bagian 1: 3 Kolom Minimalis ---
     var mainGrid = buatElemen('div', '', 'footer-columns');
 
-    // Kolom 1: Brand
     var colBrand = buatElemen('div', '', 'footer-col-brand');
     var brandTitle = buatElemen('div', '', 'footer-brand-row');
     brandTitle.appendChild(buatElemen('span', '', 'footer-brand-dot'));
@@ -213,7 +198,6 @@ function bangunFooter() {
     colBrand.appendChild(buatElemen('p', 'Platform panduan wisata ramah Muslim di Singapura. Temukan destinasi ikonik, kuliner bersertifikat halal MUIS, dan masjid terdekat dalam satu tempat.'));
     mainGrid.appendChild(colBrand);
 
-    // Kolom 2: Navigasi
     var colNav = buatElemen('div', '', 'footer-col-links');
     colNav.appendChild(buatElemen('h4', 'Jelajahi'));
     var ulNav = document.createElement('ul');
@@ -233,7 +217,6 @@ function bangunFooter() {
     colNav.appendChild(ulNav);
     mainGrid.appendChild(colNav);
 
-    // Kolom 3: Kontak & Lokasi
     var colInfo = buatElemen('div', '', 'footer-col-links');
     colInfo.appendChild(buatElemen('h4', 'Informasi & Kontak'));
     var ulInfo = document.createElement('ul');
@@ -251,7 +234,6 @@ function bangunFooter() {
 
     container.appendChild(mainGrid);
 
-    // --- Bagian 2: Bottom Bar Copyright ---
     var bottomBar = buatElemen('div', '', 'footer-bottom');
     bottomBar.appendChild(buatElemen('span', '© 2026 Halal SG Guide. All rights reserved.'));
     bottomBar.appendChild(buatElemen('span', 'Tugas Besar Pemrograman Web Dasar • Kelompok D-7'));

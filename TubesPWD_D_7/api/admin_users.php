@@ -1,13 +1,9 @@
 <?php
-// admin_users.php (Khusus Admin)
-//   GET              -> Daftar seluruh akun pengguna terdaftar
-//   POST aksi=hapus  -> Hapus akun pengguna berdasarkan ID (kecuali akun admin yang sedang login)
 require 'fungsi.php';
 require 'koneksi.php';
 
 $admin_id = wajibAdmin();
 
-// ---------- READ: DAFTAR AKUN ----------
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     $res = mysqli_query($conn, 'SELECT id, username, email, nama, asal_kota, role FROM users ORDER BY role ASC, id DESC');
     $data = array();
@@ -17,7 +13,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     berhasil('', array('data' => $data));
 }
 
-// ---------- DELETE: HAPUS AKUN PENGGUNA ----------
 wajibPost();
 $aksi = ambilPost('aksi');
 

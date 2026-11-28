@@ -1,8 +1,3 @@
-// ============================================================
-// masjid.js - CRUD 2: jadwal kunjungan masjid (wajib login)
-// Semua data diproses backend lewat api/masjid.php
-// ============================================================
-
 var daftarData = [];
 
 async function muatDaftar() {
