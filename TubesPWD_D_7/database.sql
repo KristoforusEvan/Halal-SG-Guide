@@ -2,7 +2,6 @@ DROP DATABASE IF EXISTS db_wisata_halal_sg;
 CREATE DATABASE db_wisata_halal_sg;
 USE db_wisata_halal_sg;
 
--- 1. Tabel Users dengan pembeda role ('admin' dan 'user') serta kolom foto_profil (Bonus 1 & 4)
 CREATE TABLE users (
     id INT AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(50) NOT NULL UNIQUE,
@@ -14,11 +13,9 @@ CREATE TABLE users (
     role ENUM('admin', 'user') NOT NULL DEFAULT 'user'
 );
 
--- Akun Admin bawaan (Email: admin@halalsg.com | Password: password)
 INSERT INTO users (username, email, password, nama, asal_kota, role) VALUES
 ('admin_halalsg', 'admin@halalsg.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'Administrator Halal SG', 'Singapura', 'admin');
 
--- 2. Tabel Konten Tempat (dilengkapi kolom koordinat lat & lng untuk Geolocation / Haversine - Bonus 2)
 CREATE TABLE tempat (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nama VARCHAR(100) NOT NULL,
