@@ -5,10 +5,10 @@
 <head>
     <meta http-equiv="Content-Type" content="application/xhtml+xml; charset=UTF-8" />
     <title>Dashboard Admin - Halal SG Guide</title>
-    <link rel="stylesheet" type="text/css" href="css/style.css?v=10" />
-    <script type="text/javascript" src="js/umum.js?v=10"></script>
-    <script type="text/javascript" src="js/validasi.js?v=10"></script>
-    <script type="text/javascript" src="js/admin.js?v=10"></script>
+    <link rel="stylesheet" type="text/css" href="css/style.css?v=18" />
+    <script type="text/javascript" src="js/umum.js?v=18"></script>
+    <script type="text/javascript" src="js/validasi.js?v=18"></script>
+    <script type="text/javascript" src="js/admin.js?v=18"></script>
 </head>
 <body>
     <div id="header">
@@ -24,7 +24,7 @@
         <div id="pesan"></div>
 
         <div class="card-form">
-            <form id="formKonten" action="api/tempat.php" method="post">
+            <form id="formKonten" action="api/tempat.php" method="post" enctype="multipart/form-data">
                 <div><input type="hidden" id="id_konten" name="id" value="" /></div>
                 <div class="form-group">
                     <label for="nama">Nama Tempat / Restoran / Masjid</label>
@@ -39,7 +39,11 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label for="foto_file">Upload Foto Tempat (JPG, PNG, atau WEBP - Maksimal 2 MB)</label>
+                    <label for="area">Area / Kawasan Singapura (contoh: Bugis / Kampong Glam)</label>
+                    <input type="text" id="area" name="area" />
+                </div>
+                <div class="form-group">
+                    <label for="foto_file">Upload Foto Utama Tempat (JPG, PNG, atau WEBP - Maksimal 2 MB)</label>
                     <input type="hidden" id="foto_lama" name="foto_lama" value="" />
                     <input type="file" id="foto_file" name="foto_file" accept="image/jpeg,image/png,image/webp" />
                     <p id="infoFotoSaatIni" class="form-hint">Opsional: jika dikosongkan saat tambah baru, otomatis memakai bg-singapore.jpg.</p>
@@ -72,18 +76,6 @@
                 <div class="form-group">
                     <label for="alamat">Alamat Lengkap</label>
                     <input type="text" id="alamat" name="alamat" />
-                </div>
-                <div class="form-group">
-                    <label for="foto">Nama File Foto di folder img/</label>
-                    <select id="foto" name="foto">
-                        <option value="bg-singapore.jpg">bg-singapore.jpg (Umum / Wisata)</option>
-                        <option value="zam-zam.jpg">zam-zam.jpg</option>
-                        <option value="hajah-maimunah.jpg">hajah-maimunah.jpg</option>
-                        <option value="encik-tan.jpg">encik-tan.jpg</option>
-                        <option value="masjid-sultan.jpg">masjid-sultan.jpg</option>
-                        <option value="masjid-alfalah.jpg">masjid-alfalah.jpg</option>
-                        <option value="masjid-jamae.jpg">masjid-jamae.jpg</option>
-                    </select>
                 </div>
                 <div class="form-group">
                     <label for="keterangan">Ringkasan Singkat (Tampil di Kartu Homepage)</label>

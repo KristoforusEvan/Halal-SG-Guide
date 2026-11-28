@@ -83,8 +83,8 @@ function mulaiEditKonten(row) {
     document.getElementById('judulFormKonten').textContent = 'Edit Konten Tempat';
     document.getElementById('tombolSimpanKonten').value = 'Perbarui Konten';
     document.getElementById('tombolBatalKonten').classList.remove('sembunyi');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
     tampilPesan('');
-    window.scrollTo(0, 0);
 }
 
 function selesaiEditKonten() {
